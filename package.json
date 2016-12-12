@@ -1,0 +1,27 @@
+{
+  "name": "screeps-alexkras91",
+  "version": "0.0.1",
+  "description": "bot for screeps.com",
+  "dependencies": {
+    "webpack": "^1.14.0"
+  },
+  "devDependencies": {
+    "webpack": "^1.14.0"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lex91/screeps.git"
+  },
+  "keywords": [
+    "screeps"
+  ],
+  "author": "alexkras91",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lex91/screeps/issues"
+  },
+  "homepage": "https://github.com/lex91/screeps#readme"
+}
