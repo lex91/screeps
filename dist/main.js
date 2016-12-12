@@ -36,7 +36,7 @@ const loopFunction = () => {
 					object.structureType === STRUCTURE_ROAD ||
 					object.structureType === STRUCTURE_CONTAINER ||
 					object.structureType === STRUCTURE_WALL && object.hits < 1000 ||
-					object.structureType === STRUCTURE_RAMPART && object.hits < 500
+					object.structureType === STRUCTURE_RAMPART && object.hits < 10000
 				)
 			});
 			
