@@ -2,6 +2,7 @@
   "name": "screeps-alexkras91",
   "version": "0.0.1",
   "description": "bot for screeps.com",
+  "main": "index.js",
   "dependencies": {
     "webpack": "^1.14.0"
   },
@@ -9,7 +10,7 @@
     "webpack": "^1.14.0"
   },
   "scripts": {
-    "build": "./node_modules/.bin/webpack"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
