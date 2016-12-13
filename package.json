@@ -1,9 +1,12 @@
 {
-  "name": "screeps-starter",
-  "version": "0.0.0",
-  "description": "",
+  "name": "screeps-alexkras91",
+  "version": "0.0.1",
+  "description": "screeps bot",
   "main": "./dist/main.js",
-  "repository": "screepers/screeps-typescript-starter",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lex91/screeps.git"
+  },
   "scripts": {
     "gulp": "gulp",
     "postinstall": "typings install",
