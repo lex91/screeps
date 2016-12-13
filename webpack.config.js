@@ -1,34 +1,45 @@
-const path = require('path');
-const distVersion = '0.0.2';
-//
-// module.exports = {
-// 	entry: {
-// 		//context: path.join(__dirname,'app'),
-// 		filename: "index.js"
-// 	},
-// 	output: {
-// 		path: path.join(__dirname,'dist',distVersion),
-// 		filename: "main.js",
-// 		// libraryTarget: 'var',
-// 		// library: 'screepsApp'
-// 	},
-// 	module: {
-//
-// 	}
-// };
-
-
 module.exports = {
-	entry: path.join(__dirname,'app','main.js'),
-	output: {
-		path: path.join(__dirname,'dist',distVersion),
-		filename: "main.js",
-		libraryTarget: 'commonjs2',
-		// library: 'screepsApp'
-	},
-	resolve: {
-		root: path.join(__dirname,'app')
-	},
-	module: {
-	}
+  devtool: "source-map",
+  entry: "./src/main.ts",
+  output: {
+    filename: "./main.js",
+    pathinfo: true,
+    libraryTarget: "commonjs2",
+    sourceMapFilename: '[file].map.js', // normally this is [file].map, but we need a js file, or it will be rejected by screeps server.
+    devtoolModuleFilenameTemplate: '[resource-path]',
+  },
+
+  target: "node",
+
+  node: {
+    console: true,
+    global: true,
+    process: false,
+    Buffer: false,
+    __filename: false,
+    __dirname: false,
+  },
+
+  resolve: {
+    // Add '.ts' and '.tsx' as resolvable extensions.
+    extensions: ['', '.js', '.ts', '.d.ts', '.tsx']
+  },
+
+  externals: [
+    {
+        // webpack will not try to rewrite require("main.js.map")
+        "main.js.map": "./main.js.map",
+    },
+  ],
+
+  module: {
+    loaders: [
+      // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
+      { test: /\.tsx?$/, loader: "ts-loader" },
+    ],
+    preLoaders: [
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      { test: /\.js$/, loader: "source-map-loader" }
+    ]
+  },
 };
