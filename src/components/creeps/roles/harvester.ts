@@ -1,5 +1,6 @@
 import * as creepActions from '../creepActions';
 import * as builder from './builder';
+// import {log} from '../../support/log';
 
 /**
  * Runs all creep actions.
@@ -61,6 +62,8 @@ export function run(creep: Creep): void {
 			_moveToHarvest(creep, energySource);
 		}
 	}
+
+	creep.memory.isTransferring = isTransferring;
 }
 
 function _tryHarvest(creep: Creep, target: Source): number {
@@ -74,7 +77,7 @@ function _moveToHarvest(creep: Creep, target: Source): void {
 }
 
 function _tryEnergyDropOff(creep: Creep, target: Spawn | Extension): number {
-	const amount = Math.max(target.energyCapacity - target.energy, Number(creep.carry.energy));
+	const amount = Math.min(target.energyCapacity - target.energy, Number(creep.carry.energy));
 	return creep.transfer(target, RESOURCE_ENERGY, amount);
 }
 

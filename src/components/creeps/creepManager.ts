@@ -79,18 +79,18 @@ function _buildMissingCreeps(room: Room) {
 	}
 
 	if (harvesters.length < 1) {
-		bodyParts = [WORK, CARRY, MOVE, MOVE];
+		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'harvester');
 		});
 	} else if (upgraders.length < 1) {
-		bodyParts = [WORK, WORK, CARRY, MOVE];
+		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'upgrader');
 		});
 	} else if (builders.length < 2) {
-		bodyParts = [WORK, WORK, CARRY, MOVE];
+		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'builder');
 		});
@@ -124,7 +124,7 @@ function _spawnCreep(spawn: Spawn, bodyParts: string[], role: string) {
 			log.info('Body: ' + bodyParts);
 		}
 
-		status = spawn.createCreep(bodyParts, creepName, properties);
+		status = spawn.createCreep(bodyParts, undefined /*creepName*/, properties);
 
 		return _.isString(status) ? OK : status;
 	} else {
