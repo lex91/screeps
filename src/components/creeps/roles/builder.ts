@@ -1,4 +1,5 @@
 import * as creepActions from "../creepActions";
+import * as upgrader from "./upgrader";
 
 /**
  * Runs all creep actions.
@@ -7,45 +8,53 @@ import * as creepActions from "../creepActions";
  * @param {Creep} creep
  */
 export function run(creep: Creep): void {
-  let spawn = creep.room.find<Spawn>(FIND_MY_SPAWNS)[0];
-  let controller: Controller = <Controller> (Game.getObjectById("5836b6de8b8b9619519ef7cb"));
-  let energySource = creep.room.find<Source>(FIND_SOURCES_ACTIVE)[0];
+    let spawn = creep.room.find<Spawn>(FIND_MY_SPAWNS)[0];
+    let target: ConstructionSite = creep.pos.findClosestByPath<ConstructionSite>(FIND_MY_CONSTRUCTION_SITES);
+    let energySource = creep.room.find<Source>(FIND_SOURCES_ACTIVE)[0];
 
-  let isUpgrading = Boolean(creep.memory.isUpgrading);
-
-  if (isUpgrading) {
-    isUpgrading = creep.carry.energy > 0;
-  } else {
-    isUpgrading = creep.carry.energy === creep.carryCapacity;
-  }
-
-  if (creepActions.needsRenew(creep)) {
-    creepActions.moveToRenew(creep, spawn);
-  } else {
-    if (isUpgrading) {
-      _moveToUpgrade(creep, controller);
-    } else {
-      _moveToHarvest(creep, energySource);
+    if (!target) {
+        return upgrader.run(creep);
     }
-  }
+
+    let isBuilding = Boolean(creep.memory.isBuilding);
+    const workPartsCount = creep.body.reduce((result, bodyPart) => {
+        return bodyPart.type === "work" ? result + 1 : result;
+    }, 0);
+
+    if (isBuilding) {
+        isBuilding = creep.carry.energy >= workPartsCount;
+    } else {
+        isBuilding = creep.carry.energy > creep.carryCapacity - workPartsCount * 2;
+    }
+
+    if (creepActions.needsRenew(creep)) {
+        creepActions.moveToRenew(creep, spawn);
+    } else {
+        if (isBuilding) {
+            _moveToBuild(creep, target);
+        } else {
+            _moveToHarvest(creep, energySource);
+            _tryToBuild(creep, target);
+        }
+    }
 }
 
 function _tryHarvest(creep: Creep, target: Source): number {
-  return creep.harvest(target);
+    return creep.harvest(target);
 }
 
 function _moveToHarvest(creep: Creep, target: Source): void {
-  if (_tryHarvest(creep, target) === ERR_NOT_IN_RANGE) {
-    creepActions.moveTo(creep, target.pos);
-  }
+    if (_tryHarvest(creep, target) === ERR_NOT_IN_RANGE) {
+        creepActions.moveTo(creep, target.pos);
+    }
 }
 
-function _tryToUpgrade(creep: Creep, controller: Controller): number {
-  return creep.upgradeController(controller);
+function _tryToBuild(creep: Creep, target: ConstructionSite): number {
+    return creep.build(target);
 }
 
-function _moveToUpgrade(creep: Creep, controller: Controller): void {
-  if (_tryToUpgrade(creep, controller) === ERR_NOT_IN_RANGE) {
-    creepActions.moveTo(creep, controller.pos);
-  }
+function _moveToBuild(creep: Creep, target: ConstructionSite): void {
+    if (_tryToBuild(creep, target) === ERR_NOT_IN_RANGE) {
+        creepActions.moveTo(creep, target.pos);
+    }
 }
