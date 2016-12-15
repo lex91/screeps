@@ -12,6 +12,13 @@
       "check-format",
       "allow-pascal-case",
       "allow-leading-underscore"
-    ]
+    ],
+    "indent": [true, "tabs"],
+    "trailing-comma": [true, {
+        "singleline": "never",
+        "multiline": "never"
+      }
+    ],
+    "quotemark": [true, "single", "avoid-escape"]
   }
 }
