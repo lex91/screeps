@@ -37,6 +37,8 @@ export function run(creep: Creep): void {
 			_tryToBuild(creep, target);
 		}
 	}
+
+	creep.memory.isBuilding = isBuilding;
 }
 
 function _tryHarvest(creep: Creep, target: Source): number {

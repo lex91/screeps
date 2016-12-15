@@ -32,6 +32,8 @@ export function run(creep: Creep): void {
 			_moveToHarvest(creep, energySource);
 		}
 	}
+
+	creep.memory.isUpgrading = isUpgrading;
 }
 
 function _tryHarvest(creep: Creep, target: Source): number {
