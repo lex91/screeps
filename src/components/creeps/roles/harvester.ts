@@ -2,6 +2,7 @@ import * as creepActions from '../creepActions';
 import * as builder from './builder';
 // import {log} from '../../support/log';
 
+
 /**
  * Runs all creep actions.
  *
@@ -10,10 +11,10 @@ import * as builder from './builder';
  */
 export function run(creep: Creep): void {
 	let spawn = creep.room.find<Spawn>(FIND_MY_SPAWNS)[0];
-	let structures = creep.room.find<Spawn | Extension>(FIND_MY_STRUCTURES, {
+	let structures: (Spawn|Extension|Tower)[] = creep.room.find<Spawn|Extension>(FIND_MY_STRUCTURES, {
 		filter: (structure: Structure) => {
 			if (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) {
-				const energyStructire = <Spawn | Extension> (structure);
+				const energyStructire = <Spawn|Extension> (structure);
 
 				return energyStructire.energy < energyStructire.energyCapacity;
 			}
@@ -22,7 +23,17 @@ export function run(creep: Creep): void {
 		}
 	});
 	if (structures.length === 0) {
-		// TODO: tower
+		structures = creep.room.find<Spawn | Extension>(FIND_MY_STRUCTURES, {
+			filter: (structure: Structure) => {
+				if (structure.structureType === STRUCTURE_TOWER) {
+					const energyStructire = <Tower> (structure);
+
+					return energyStructire.energy < energyStructire.energyCapacity;
+				}
+
+				return false;
+			}
+		});
 	}
 
 	let energySource = creep.room.find<Source>(FIND_SOURCES_ACTIVE)[0];
@@ -31,7 +42,7 @@ export function run(creep: Creep): void {
 		return builder.run(creep);
 	}
 
-	let chosenTarget: Spawn | Extension = structures[0];
+	let chosenTarget: Spawn|Extension|Tower = structures[0];
 	let minMeasure = creep.room.findPath(creep.pos, chosenTarget.pos).length;
 	for (let i = 1; i < structures.length; i++) {
 		const measure = creep.room.findPath(creep.pos, structures[i].pos).length;
@@ -76,12 +87,12 @@ function _moveToHarvest(creep: Creep, target: Source): void {
 	}
 }
 
-function _tryEnergyDropOff(creep: Creep, target: Spawn | Extension): number {
+function _tryEnergyDropOff(creep: Creep, target: Spawn|Extension|Tower): number {
 	const amount = Math.min(target.energyCapacity - target.energy, Number(creep.carry.energy));
 	return creep.transfer(target, RESOURCE_ENERGY, amount);
 }
 
-function _moveToDropEnergy(creep: Creep, target: Spawn | Extension): void {
+function _moveToDropEnergy(creep: Creep, target: Spawn|Extension|Tower): void {
 	if (_tryEnergyDropOff(creep, target) === ERR_NOT_IN_RANGE) {
 		creepActions.moveTo(creep, target.pos);
 	}

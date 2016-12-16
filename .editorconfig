@@ -7,7 +7,7 @@ tab_width=4
 
 [{.eslintrc,.babelrc,.stylelintrc,*.json,*.jsb3,*.jsb2,*.bowerrc}]
 indent_style=tab
-indent_size=2
+indent_size=4
 
 [{*.ats,*.ts}]
 indent_style=tab
@@ -15,9 +15,9 @@ indent_size=4
 
 [tslint.json]
 indent_style=tab
-indent_size=2
+indent_size=4
 
 [{.analysis_options,*.yml,*.yaml}]
 indent_style=tab
-indent_size=2
+indent_size=4
 
