@@ -4,10 +4,14 @@ import * as harvester from './roles/harvester';
 import * as upgrader from './roles/upgrader';
 import * as builder from './roles/builder';
 
+import * as commonTower from './commonTower';
+
 import {log} from '../support/log';
 
 export let creeps: Creep[];
 export let creepCount: number = 0;
+
+export let towers: Tower[];
 
 export let harvesters: Creep[] = [];
 export let upgraders: Creep[] = [];
@@ -22,6 +26,7 @@ export let builders: Creep[] = [];
 export function run(room: Room): void {
 	_loadCreeps(room);
 	_buildMissingCreeps(room);
+	_loadTowers(room);
 
 	_.each(creeps, (creep: Creep) => {
 		if (creep.memory.role === 'harvester') {
@@ -31,6 +36,10 @@ export function run(room: Room): void {
 		} else if (creep.memory.role === 'builder') {
 			builder.run(creep);
 		}
+	});
+
+	_.each(towers, (tower: Tower) => {
+		commonTower.run(tower);
 	});
 }
 
@@ -55,6 +64,16 @@ function _loadCreeps(room: Room) {
 			', Upgraders: ' + upgraders.length +
 			', Builders: ' + builders.length
 		);
+	}
+}
+
+function _loadTowers(room: Room) {
+	towers = room.find<Tower>(FIND_MY_STRUCTURES, {
+		filter: (structure: Structure) => structure.structureType === STRUCTURE_TOWER
+	});
+
+	if (Config.ENABLE_DEBUG_MODE) {
+		log.info(towers.length + ' towers found in the playground.');
 	}
 }
 
