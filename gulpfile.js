@@ -115,7 +115,7 @@ gulp.task('compile-bundled', gulp.series(gulp.parallel('gitRevisions', 'lint', '
     .pipe(through.obj(function (file, enc, cb) {
         // Source maps are JSON files with a single object.
         // Screeps server takes only *.js files, require() expects .js files to be modules and export something, so turning it into module with one export: "d".
-        // If we could name it *.json, this wouldn't be needed.
+        // If we could roleName it *.json, this wouldn't be needed.
         if (/main\.js\.map\.js$/.test(file.path)) {
           file._contents = Buffer.concat([Buffer.from("module.exports.d=", 'utf-8'), file._contents]);
         }

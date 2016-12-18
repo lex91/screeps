@@ -10,7 +10,7 @@ import * as builder from './builder';
  * @param {Creep} creep
  */
 export function run(creep: Creep): void {
-	let spawn = creep.room.find<Spawn>(FIND_MY_SPAWNS)[0];
+	let spawn = creep.pos.findClosestByPath<Spawn>(FIND_MY_SPAWNS);
 	let structures: (Spawn|Extension|Tower)[] = creep.room.find<Spawn|Extension>(FIND_MY_STRUCTURES, {
 		filter: (structure: Structure) => {
 			if (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) {

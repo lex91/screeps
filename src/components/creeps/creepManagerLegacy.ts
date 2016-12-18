@@ -18,7 +18,7 @@ export let upgraders: Creep[] = [];
 export let builders: Creep[] = [];
 
 /**
- * Initialization scripts for CreepManager module.
+ * Initialization scripts for CreepManagerLegacy module.
  *
  * @export
  * @param {Room} room
@@ -49,7 +49,9 @@ export function run(room: Room): void {
  * @param {Room} room
  */
 function _loadCreeps(room: Room) {
-	creeps = room.find<Creep>(FIND_MY_CREEPS);
+	creeps = room.find<Creep>(FIND_MY_CREEPS, {
+		filter: (creep: Creep) => creep.memory.version === '1.0.0'
+	});
 	creepCount = _.size(creeps);
 
 	// Iterate through each creep and push them into the role array.
@@ -97,18 +99,18 @@ function _buildMissingCreeps(room: Room) {
 		}
 	}
 
-	if (harvesters.length < 1) {
+	if (harvesters.length < 0) {
 		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'harvester');
 		});
-	} else if (upgraders.length < 1) {
+	} else if (upgraders.length < 0) {
 		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'upgrader');
 		});
-	} else if (builders.length < 2) {
+	} else if (builders.length < 0) {
 		bodyParts = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 		_.each(spawns, (spawn: Spawn) => {
 			_spawnCreep(spawn, bodyParts, 'builder');

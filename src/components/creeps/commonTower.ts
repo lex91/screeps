@@ -29,7 +29,7 @@ export function run(tower: Tower): void {
 		structuresByPriority[priority].push(structure);
 	}
 
-	const priorityTreshold = Math.min(Math.floor(tower.energy / 166.67) + 1, structuresByPriority.length);
+	const priorityTreshold = Math.min(Math.floor((tower.energy - 401) / 100) + 1, structuresByPriority.length);
 
 	for (let i = 0; i < priorityTreshold; i++) {
 		const priorityStructures = structuresByPriority[i];
@@ -65,7 +65,7 @@ function _calculateRepairingPriority(structure: Structure): number {
 			}
 
 			break;
-		case STRUCTURE_WALL: {
+		case STRUCTURE_WALL:
 			if (structure.hits > 100000) {
 				return 5;
 			} else if (structure.hits > 50000) {
@@ -77,7 +77,18 @@ function _calculateRepairingPriority(structure: Structure): number {
 			}
 
 			break;
-		}
+		case STRUCTURE_CONTAINER:
+			if (durability > 0.9) {
+				return 5;
+			} else if (durability > 0.75) {
+				return 4;
+			} else if (durability > 0.5) {
+				return 3;
+			} else if (durability > 0.25) {
+				return 2;
+			}
+
+			break;
 		default: {
 			// Do nothing
 		}

@@ -15,7 +15,7 @@ export const USE_PATHFINDER: boolean = true;
  * Minimum number of ticksToLive for a Creep before they go to renew.
  * @type {number}
  */
-export const DEFAULT_MIN_LIFE_BEFORE_NEEDS_REFILL: number = 300;
+export const DEFAULT_MIN_LIFE_BEFORE_NEEDS_REFILL: number = 100;
 
 /**
  * Debug level for log output
@@ -30,12 +30,12 @@ export const LOG_PRINT_TICK: boolean = true;
 /**
  * Prepend log output with source line.
  */
-export const LOG_PRINT_LINES: boolean = true;
+export const LOG_PRINT_LINES: boolean = false;
 
 /**
  * Load source maps and resolve source lines back to typeascript.
  */
-export const LOG_LOAD_SOURCE_MAP: boolean = true;
+export const LOG_LOAD_SOURCE_MAP: boolean = false;
 
 /**
  * Maximum padding for source links (for aligning log output).
