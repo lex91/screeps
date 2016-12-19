@@ -42,7 +42,7 @@ function _tryHarvest(creep: Creep, target: Source): number {
 
 function _moveToHarvest(creep: Creep, target: Source): void {
 	if (_tryHarvest(creep, target) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, target.pos);
+		creep.moveTo(target);
 	}
 }
 
@@ -52,6 +52,6 @@ function _tryToUpgrade(creep: Creep, controller: Controller): number {
 
 function _moveToUpgrade(creep: Creep, controller: Controller): void {
 	if (_tryToUpgrade(creep, controller) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, controller.pos);
+		creep.moveTo(controller);
 	}
 }

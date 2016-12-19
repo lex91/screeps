@@ -1,12 +1,7 @@
 import * as creepActions from '../creepActions';
 import * as upgrader from './upgrader';
 
-/**
- * Runs all creep actions.
- *
- * @export
- * @param {Creep} creep
- */
+
 export function run(creep: Creep): void {
 	let spawn = creep.room.find<Spawn>(FIND_MY_SPAWNS)[0];
 	let target: ConstructionSite = creep.pos.findClosestByPath<ConstructionSite>(FIND_MY_CONSTRUCTION_SITES);
@@ -46,7 +41,7 @@ function _tryHarvest(creep: Creep, target: Source): number {
 
 function _moveToHarvest(creep: Creep, target: Source): void {
 	if (_tryHarvest(creep, target) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, target.pos);
+		creep.moveTo(target);
 	}
 }
 
@@ -56,6 +51,6 @@ function _tryToBuild(creep: Creep, target: ConstructionSite): number {
 
 function _moveToBuild(creep: Creep, target: ConstructionSite): void {
 	if (_tryToBuild(creep, target) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, target.pos);
+		creep.moveTo(target);
 	}
 }

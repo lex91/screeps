@@ -1,14 +1,7 @@
 import * as creepActions from '../creepActions';
 import * as builder from './builder';
-// import {log} from '../../support/log';
 
 
-/**
- * Runs all creep actions.
- *
- * @export
- * @param {Creep} creep
- */
 export function run(creep: Creep): void {
 	let spawn = creep.pos.findClosestByPath<Spawn>(FIND_MY_SPAWNS);
 	let structures: (Spawn|Extension|Tower)[] = creep.room.find<Spawn|Extension>(FIND_MY_STRUCTURES, {
@@ -83,7 +76,7 @@ function _tryHarvest(creep: Creep, target: Source): number {
 
 function _moveToHarvest(creep: Creep, target: Source): void {
 	if (_tryHarvest(creep, target) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, target.pos);
+		creep.moveTo(target);
 	}
 }
 
@@ -94,6 +87,6 @@ function _tryEnergyDropOff(creep: Creep, target: Spawn|Extension|Tower): number 
 
 function _moveToDropEnergy(creep: Creep, target: Spawn|Extension|Tower): void {
 	if (_tryEnergyDropOff(creep, target) === ERR_NOT_IN_RANGE) {
-		creepActions.moveTo(creep, target.pos);
+		creep.moveTo(target);
 	}
 }

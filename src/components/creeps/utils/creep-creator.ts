@@ -1,7 +1,7 @@
 class CreepCreator {
-	public createCreep({spawn, body, name, memory}: CreateParams): string|number {
-		const bodyArray = CreepCreator._createCreepBodyFromObject(body);
-		return spawn.createCreep(bodyArray, name, memory);
+	public createCreep(params: CreateParams): string|number {
+		const body = CreepCreator._createCreepBodyFromObject(params.body);
+		return params.spawn.createCreep(body, params.name, params.memory);
 	}
 
 

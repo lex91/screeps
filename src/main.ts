@@ -1,5 +1,4 @@
 import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
-import {CreepController} from './components/v2/creep-manager';
 import * as Config from './config/config';
 
 import {log} from './components/support/log';
@@ -34,41 +33,14 @@ export function loop() {
 		let room: Room = Game.rooms[i];
 
 		CreepManagerLegacy.run(room);
-
-		// Clears any non-existing creep memory.
-		for (let name in Memory.creeps) {
-			let creep: any = Memory.creeps[name];
-
-			if (creep.room === room.name) {
-				if (!Game.creeps[name]) {
-					log.info('Clearing non-existing creep memory:', name);
-					delete Memory.creeps[name];
-				}
-			}
-		}
 	}
 
-	const creeps: {[fieldName: string]: Array<CreepController>} = {
-		harvester1: null,
-		harvester2:null,
-		transporter1: null,
-		transporter2: null,
-		upgraderTransporter:null,
-	};
-	for (let creepName in Game.creeps) {
-		const creep = Game.creeps[creepName];
-
-		if (creep.memory.version === '2.0.0') {
-			log.debug(`Running creep 2.0.0: ${creep.name}`);
-
-			const creepManager = new CreepController(creep);
-
-			creepManager.run();
+	// TODO: extract method
+	// Clears any non-existing creep memory.
+	for (let creepName in Memory.creeps) {
+		if (!Game.creeps[creepName]) {
+			log.debug('Clearing non-existing creep memory:', name);
+			delete Memory.creeps[creepName];
 		}
 	}
-}
-
-
-interface CreepConfig {
-
 }
