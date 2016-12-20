@@ -35,7 +35,7 @@ export function run(creep: Creep) {
 				return;
 			}
 
-			this._creep.moveTo(workingPositionFlag);
+			creep.moveTo(workingPositionFlag);
 			break;
 		default:
 			logFail(creep, `Can't harvest from source - ${harvestResult}`);
