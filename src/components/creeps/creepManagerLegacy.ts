@@ -9,6 +9,7 @@ import * as energyTransporter from './roles/energy-transporter';
 import * as commonTower from './commonTower';
 
 import {log} from '../support/log';
+import {creepCreator} from './utils/creep-creator';
 
 export let creeps: Creep[];
 export let creepCount: number = 0;
@@ -130,6 +131,41 @@ function _buildMissingCreeps(room: Room) {
 			_spawnCreep(spawn, bodyParts, 'builder');
 		});
 	}
+
+
+	if (Game.creeps['NEVER_CREATE'] && !Game.creeps['h1']) {
+		creepCreator.createCreep({
+			spawn: Game.spawns['W73S32-1'],
+			body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
+			name: 'h1',
+			memory: {
+				role: {
+					name: 'static-harvester',
+					data: {
+						sourceId: '5836b6de8b8b9619519ef7ca',
+						containerId: '585409e14a9a1e354b4fcad2',
+						workingPositionFlagName: 'W73S32-harvester-1'
+					}
+				}
+			}
+		});
+	} else if (!Game.creeps['h2']) {
+		creepCreator.createCreep({
+			spawn: Game.spawns['W73S32-1'],
+			body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
+			name: 'h2',
+			memory: {
+				role: {
+					name: 'static-harvester',
+					data: {
+						sourceId: '5836b6de8b8b9619519ef7cc',
+						containerId: '5854d1e2e745b9e36a10abe4',
+						workingPositionFlagName: 'W73S32-harvester-2'
+					}
+				}
+			}
+		});
+	}
 }
 
 /**
@@ -144,7 +180,7 @@ function _spawnCreep(spawn: Spawn, bodyParts: string[], role: string) {
 	let uuid: number = Memory.uuid;
 	let status: number | string = spawn.canCreateCreep(bodyParts, undefined);
 
-	let properties: { [key: string]: any } = {
+	let properties: {[key: string]: any} = {
 		role,
 		room: spawn.room.name
 	};
