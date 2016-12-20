@@ -10,36 +10,36 @@ export function run(creep: Creep) {
 		return;
 	}
 
+	const workingPositionFlag = Game.flags[data.workingPositionFlagName];
+	if (!workingPositionFlag) {
+		logFail(creep, `Can't find flag by id`);
+		return;
+	}
+
+
+	if (!creep.pos.isEqualTo(workingPositionFlag)) {
+		creep.moveTo(workingPositionFlag);
+		return;
+	}
+
 	const harvestResult = creep.harvest(source);
-	switch (harvestResult) {
-		case OK:
-			if (creep.carry[RESOURCE_ENERGY] > 0) {
-				const container = Game.getObjectById<Container>(data.containerId);
-				if (!container) {
-					logFail(creep, `Can't find container by id`);
-					return;
-				}
+	if (harvestResult !== OK) {
+		logFail(creep, `Can't harvest from source - ${harvestResult}`);
+		return;
+	}
 
-				const transferResult = creep.transfer(container, RESOURCE_ENERGY, creep.carry[RESOURCE_ENERGY]);
-				if (transferResult !== OK) {
-					logFail(creep, `Can't transfer energy to source - ${transferResult}`);
-					return;
-				}
-			}
-
-			break;
-		case ERR_NOT_IN_RANGE:
-			const workingPositionFlag = Game.flags[data.workingPositionFlagName];
-			if (!workingPositionFlag) {
-				logFail(creep, `Can't find flag by id`);
-				return;
-			}
-
-			creep.moveTo(workingPositionFlag);
-			break;
-		default:
-			logFail(creep, `Can't harvest from source - ${harvestResult}`);
+	if (creep.carry[RESOURCE_ENERGY] > 0) {
+		const container = Game.getObjectById<Container>(data.containerId);
+		if (!container) {
+			logFail(creep, `Can't find container by id`);
 			return;
+		}
+
+		const transferResult = creep.transfer(container, RESOURCE_ENERGY, creep.carry[RESOURCE_ENERGY]);
+		if (transferResult !== OK) {
+			logFail(creep, `Can't transfer energy to source - ${transferResult}`);
+			return;
+		}
 	}
 }
 
@@ -62,5 +62,3 @@ export interface StaticHarvesterMemory {
 	containerId: string;
 	workingPositionFlagName: string;
 }
-
-//

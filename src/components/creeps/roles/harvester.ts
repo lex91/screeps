@@ -57,7 +57,7 @@ export function run(creep: Creep): void {
 		isTransferring = creep.carry.energy > creep.carryCapacity - workPartsCount * 2;
 	}
 
-	if (creepActions.needsRenew(creep)) {
+	if (Game.creeps['NEVER_CREATE'] && creepActions.needsRenew(creep)) {
 		creepActions.moveToRenew(creep, spawn);
 	} else {
 		if (isTransferring) {

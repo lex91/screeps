@@ -74,23 +74,57 @@ export function run(creep: Creep) {
 				return;
 		}
 	} else {
-		const to = Game.getObjectById<Container|Storage>(data.toId);
-		if (!to) {
-			logFail(creep, `Can't find "to" object by id`);
-			return;
-		}
+		let structures: (Spawn|Extension|Tower)[] = creep.room.find<Spawn|Extension>(FIND_MY_STRUCTURES, {
+			filter: (structure: Structure) => {
+				if (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) {
+					const energyStructire = <Spawn|Extension> (structure);
 
-		const toStoreLoad = _.sum(to.store);
-		const transferAmount = Math.min(Number(creep.carry[RESOURCE_ENERGY]), to.storeCapacity - toStoreLoad);
-		if (transferAmount <= 0) {
+					return energyStructire.energy < energyStructire.energyCapacity;
+				}
+
+				return false;
+			}
+		});
+		if (structures.length === 0) {
+			structures = creep.room.find<Spawn | Extension>(FIND_MY_STRUCTURES, {
+				filter: (structure: Structure) => {
+					if (structure.structureType === STRUCTURE_TOWER) {
+						const energyStructire = <Tower> (structure);
+
+						return energyStructire.energy < energyStructire.energyCapacity;
+					}
+
+					return false;
+				}
+			});
+		}
+		if (structures.length === 0) {
 			if (data.renew) {
 				data.renew.shouldRenew = null;
 			}
-
 			return;
 		}
 
-		const transferResult = creep.transfer(to, RESOURCE_ENERGY, transferAmount);
+		let chosenTarget: Spawn|Extension|Tower = structures[0];
+		let minMeasure = creep.room.findPath(creep.pos, chosenTarget.pos).length;
+		for (let i = 1; i < structures.length; i++) {
+			const measure = creep.room.findPath(creep.pos, structures[i].pos).length;
+			if (measure < minMeasure) {
+				minMeasure = measure;
+				chosenTarget = structures[i];
+			}
+		}
+
+		const transferAmount = Math.min(
+			Number(creep.carry[RESOURCE_ENERGY]),
+			chosenTarget.energyCapacity - chosenTarget.energy
+		);
+		if (transferAmount <= 0) {
+			logFail(creep, `Can't charge - all objects is full and it is unexpected!`);
+			return;
+		}
+
+		const transferResult = creep.transfer(chosenTarget, RESOURCE_ENERGY, transferAmount);
 		switch (transferResult) {
 			case OK:
 				if (data.renew) {
@@ -103,7 +137,7 @@ export function run(creep: Creep) {
 					data.renew.shouldRenew = false;
 				}
 
-				creep.moveTo(to);
+				creep.moveTo(chosenTarget);
 
 				return;
 			default:
@@ -114,22 +148,21 @@ export function run(creep: Creep) {
 }
 
 
-function getDataFromCreepMemory(creep: Creep): EnergyTransporterMemory {
-	return <EnergyTransporterMemory> (creep.memory.role.data);
+function getDataFromCreepMemory(creep: Creep): EnergyChargerMemory {
+	return <EnergyChargerMemory> (creep.memory.role.data);
 }
 
 
 function logFail(creep: Creep, failMessage: string): void {
 	log.error(
-		`Energy transporter ${creep.name} failed: ${failMessage}.
+		`Energy charger ${creep.name} failed: ${failMessage}.
 		Params: ${JSON.stringify(getDataFromCreepMemory(creep))}`
 	);
 }
 
 
-export interface EnergyTransporterMemory {
+export interface EnergyChargerMemory {
 	fromId: string;
 	fromMinAmount: number;
-	toId: string;
 	renew?: RenewMemory;
 }

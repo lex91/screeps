@@ -66,7 +66,9 @@ function _calculateRepairingPriority(structure: Structure): number {
 
 			break;
 		case STRUCTURE_WALL:
-			if (structure.hits > 100000) {
+			if (structure.hits > 200000) {
+				return 6;
+			} else if (structure.hits > 100000) {
 				return 5;
 			} else if (structure.hits > 50000) {
 				return 4;
