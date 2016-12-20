@@ -1,5 +1,5 @@
 import {log} from '../../support/log';
-import {RenewMemory, renew} from "../tasks/renew";
+import {RenewMemory, renew} from '../tasks/renew';
 
 
 export function run(creep: Creep) {
@@ -35,42 +35,79 @@ export function run(creep: Creep) {
 	/*
 	 Transporting:
 	 */
-	if (creep.carry.energy === 0) {
+	if (creep.carry[RESOURCE_ENERGY] === 0) {
 		const from = Game.getObjectById<Container|Storage>(data.fromId);
 		if (!from) {
 			logFail(creep, `Can't find "from" object by id`);
 			return;
 		}
 
-		const withdrawAmount = Math.min(creep.carryCapacity, from.store[RESOURCE_ENERGY] - data.fromMinAmount);
-		if (withdrawAmount > 0) {
-			const withdrawResult = creep.withdraw(from, RESOURCE_ENERGY, withdrawAmount);
-			switch (withdrawResult) {
-				case OK:
-					if (data.renew) {
-						data.renew.shouldRenew = null;
-					}
-
-					return;
-				case ERR_NOT_IN_RANGE:
-					if (data.renew) {
-						data.renew.shouldRenew = false;
-					}
-
-					break;
-				default:
-					logFail(creep, `Can't withdraw - ${withdrawResult}`);
-					return;
-			}
-		} else {
+		const withdrawAmount = Math.min(creep.carryCapacity, Number(from.store[RESOURCE_ENERGY]) - data.fromMinAmount);
+		if (withdrawAmount <= 0) {
 			if (data.renew) {
 				data.renew.shouldRenew = null;
 			}
 
 			return;
 		}
+
+		const withdrawResult = creep.withdraw(from, RESOURCE_ENERGY, withdrawAmount);
+		switch (withdrawResult) {
+			case OK:
+				if (data.renew) {
+					data.renew.shouldRenew = null;
+				}
+
+				return;
+			case ERR_NOT_IN_RANGE:
+				if (data.renew) {
+					data.renew.shouldRenew = false;
+				}
+
+				creep.moveTo(from);
+
+				return;
+			default:
+				logFail(creep, `Can't withdraw - ${withdrawResult}`);
+				return;
+		}
 	} else {
-		// TODO: go to "to" structure
+		const to = Game.getObjectById<Container|Storage>(data.toId);
+		if (!to) {
+			logFail(creep, `Can't find "to" object by id`);
+			return;
+		}
+
+		const toStoreLoad = _.sum(to.store);
+		const transferAmount = Math.min(Number(creep.carry[RESOURCE_ENERGY]), to.storeCapacity - toStoreLoad);
+		if (transferAmount <= 0) {
+			if (data.renew) {
+				data.renew.shouldRenew = null;
+			}
+
+			return;
+		}
+
+		const transferResult = creep.transfer(to, RESOURCE_ENERGY, transferAmount);
+		switch (transferResult) {
+			case OK:
+				if (data.renew) {
+					data.renew.shouldRenew = null;
+				}
+
+				return;
+			case ERR_NOT_IN_RANGE:
+				if (data.renew) {
+					data.renew.shouldRenew = false;
+				}
+
+				creep.moveTo(to);
+
+				return;
+			default:
+				logFail(creep, `Can't withdraw - ${transferResult}`);
+				return;
+		}
 	}
 }
 

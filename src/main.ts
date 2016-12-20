@@ -1,7 +1,9 @@
+import {creepCreator} from './components/creeps/utils/creep-creator';
 import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
 import * as Config from './config/config';
 
 import {log} from './components/support/log';
+global.creepCreator = creepCreator;
 
 // Any code written outside the `loop()` method is executed only when the
 // Screeps system reloads your script.

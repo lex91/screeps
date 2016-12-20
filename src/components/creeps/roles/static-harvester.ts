@@ -13,14 +13,14 @@ export function run(creep: Creep) {
 	const harvestResult = creep.harvest(source);
 	switch (harvestResult) {
 		case OK:
-			if (creep.carry.energy > 0) {
+			if (creep.carry[RESOURCE_ENERGY] > 0) {
 				const container = Game.getObjectById<Container>(data.containerId);
 				if (!container) {
 					logFail(creep, `Can't find container by id`);
 					return;
 				}
 
-				const transferResult = creep.transfer(container, RESOURCE_ENERGY, creep.carry.energy);
+				const transferResult = creep.transfer(container, RESOURCE_ENERGY, creep.carry[RESOURCE_ENERGY]);
 				if (transferResult !== OK) {
 					logFail(creep, `Can't transfer energy to source - ${transferResult}`);
 					return;
@@ -29,7 +29,7 @@ export function run(creep: Creep) {
 
 			break;
 		case ERR_NOT_IN_RANGE:
-			const workingPositionFlag = Game.getObjectById<Flag>(data.workingPositionFlagId);
+			const workingPositionFlag = Game.flags[data.workingPositionFlagName];
 			if (!workingPositionFlag) {
 				logFail(creep, `Can't find flag by id`);
 				return;
@@ -60,5 +60,7 @@ function logFail(creep: Creep, failMessage: string): void {
 export interface StaticHarvesterMemory {
 	sourceId: string;
 	containerId: string;
-	workingPositionFlagId: string;
+	workingPositionFlagName: string;
 }
+
+//

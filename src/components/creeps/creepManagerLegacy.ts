@@ -3,6 +3,8 @@ import * as Config from '../../config/config';
 import * as harvester from './roles/harvester';
 import * as upgrader from './roles/upgrader';
 import * as builder from './roles/builder';
+import * as staticHarvester from './roles/static-harvester';
+import * as energyTransporter from './roles/energy-transporter';
 
 import * as commonTower from './commonTower';
 
@@ -16,6 +18,8 @@ export let towers: Tower[];
 export let harvesters: Creep[] = [];
 export let upgraders: Creep[] = [];
 export let builders: Creep[] = [];
+export let staticHarvesters: Creep[] = [];
+export let transporters: Creep[] = [];
 
 /**
  * Initialization scripts for CreepManagerLegacy module.
@@ -35,6 +39,10 @@ export function run(room: Room): void {
 			upgrader.run(creep);
 		} else if (creep.memory.role === 'builder') {
 			builder.run(creep);
+		} else if (typeof creep.memory.role === 'object' && creep.memory.role.name === 'static-harvester') {
+			staticHarvester.run(creep);
+		} else if (typeof creep.memory.role === 'object' && creep.memory.role.name === 'energy-transporter') {
+			energyTransporter.run(creep);
 		}
 	});
 
@@ -50,7 +58,7 @@ export function run(room: Room): void {
  */
 function _loadCreeps(room: Room) {
 	creeps = room.find<Creep>(FIND_MY_CREEPS, {
-		filter: (creep: Creep) => creep.memory.version === '1.0.0'
+		filter: (/*creep: Creep*/) => true
 	});
 	creepCount = _.size(creeps);
 
@@ -58,6 +66,12 @@ function _loadCreeps(room: Room) {
 	harvesters = _.filter(creeps, (creep) => creep.memory.role === 'harvester');
 	upgraders = _.filter(creeps, (creep) => creep.memory.role === 'upgrader');
 	builders = _.filter(creeps, (creep) => creep.memory.role === 'builder');
+	staticHarvesters = _.filter(creeps, (creep) => (
+		typeof creep.memory.role === 'object' && creep.memory.role.name === 'static-harvester'
+	));
+	transporters = _.filter(creeps, (creep) => (
+		typeof creep.memory.role === 'object' && creep.memory.role.name === 'energy-transporter'
+	));
 
 	if (Config.ENABLE_DEBUG_MODE) {
 		log.info(creepCount + ' creeps found in the playground.');

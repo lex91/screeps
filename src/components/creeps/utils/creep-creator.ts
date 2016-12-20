@@ -1,4 +1,4 @@
-class CreepCreator {
+export class CreepCreator {
 	public createCreep(params: CreateParams): string|number {
 		const body = CreepCreator._createCreepBodyFromObject(params.body);
 		return params.spawn.createCreep(body, params.name, params.memory);

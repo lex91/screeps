@@ -19,4 +19,3 @@ export interface RenewMemory {
 	renewUntil: number;
 	shouldRenew?: boolean|null;
 }
-
