@@ -162,7 +162,7 @@ function _buildMissingCreeps(room: Room) {
 			name: 'h2',
 			memory: {
 				role: {
-					name: 'static-upgrader',
+					name: 'static-harvester',
 					data: {
 						sourceId: '5836b6de8b8b9619519ef7cc',
 						containerId: '5854d1e2e745b9e36a10abe4',
@@ -179,7 +179,10 @@ function _buildMissingCreeps(room: Room) {
 			memory: {
 				role: {
 					name: 'static-upgrader',
-					data: {fromId: '585421191717308736b8fa8c', workingPositionFlagName: 'W73S32-upgrader-1'}
+					data: {
+						fromId: '585421191717308736b8fa8c',
+						workingPositionFlagName: 'W73S32-upgrader-1'
+					}
 				}
 			}
 		});
