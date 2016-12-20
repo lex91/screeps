@@ -1,7 +1,7 @@
-import {log} from "../../support/log";
+import {log} from '../../support/log';
 
 
-export function run (creep: Creep) {
+export function run(creep: Creep) {
 	const data = getDataFromCreepMemory(creep);
 
 	const source = Game.getObjectById<Source|Mineral>(data.sourceId);
@@ -10,16 +10,16 @@ export function run (creep: Creep) {
 		return;
 	}
 
-	const container = Game.getObjectById<Container>(data.containerId);
-	if (!container) {
-		logFail(creep, `Can't find container by id`);
-		return;
-	}
-
 	const harvestResult = creep.harvest(source);
 	switch (harvestResult) {
 		case OK:
 			if (creep.carry.energy > 0) {
+				const container = Game.getObjectById<Container>(data.containerId);
+				if (!container) {
+					logFail(creep, `Can't find container by id`);
+					return;
+				}
+
 				const transferResult = creep.transfer(container, RESOURCE_ENERGY, creep.carry.energy);
 				if (transferResult !== OK) {
 					logFail(creep, `Can't transfer energy to source - ${transferResult}`);
@@ -53,7 +53,7 @@ function logFail(creep: Creep, failMessage: string): void {
 	log.error(
 		`Static harvester ${creep.name} failed: ${failMessage}.
 		Params: ${JSON.stringify(getDataFromCreepMemory(creep))}`
-	)
+	);
 }
 
 
