@@ -54,7 +54,7 @@ function _calculateRepairingPriority(structure: Structure): number {
 
 	switch (structure.structureType) {
 		case STRUCTURE_ROAD:
-			if (durability > 0.9) {
+			if (durability > 0.85) {
 				return 5;
 			} else if (durability > 0.75) {
 				return 4;
@@ -80,7 +80,7 @@ function _calculateRepairingPriority(structure: Structure): number {
 
 			break;
 		case STRUCTURE_CONTAINER:
-			if (durability > 0.9) {
+			if (durability > 0.85) {
 				return 5;
 			} else if (durability > 0.75) {
 				return 4;
