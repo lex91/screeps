@@ -7,6 +7,7 @@ import * as staticHarvester from './roles/static-harvester';
 import * as energyTransporter from './roles/energy-transporter';
 import * as energyCharger from './roles/energy-charger';
 import * as staticUpgrader from './roles/static-upgrader';
+import * as builderOnly from './roles/builder-only';
 
 import * as commonTower from './commonTower';
 
@@ -50,6 +51,8 @@ export function run(room: Room): void {
 			energyCharger.run(creep);
 		} else if (typeof creep.memory.role === 'object' && creep.memory.role.name === 'static-upgrader') {
 			staticUpgrader.run(creep);
+		} else if (typeof creep.memory.role === 'object' && creep.memory.role.name === 'builder-only') {
+			builderOnly.run(creep);
 		}
 	});
 
@@ -138,54 +141,55 @@ function _buildMissingCreeps(room: Room) {
 		});
 	}
 
-
-	if (!Game.creeps['h1']) {
-		creepCreator.createCreep({
-			spawn: Game.spawns['W73S32-1'],
-			body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
-			name: 'h1',
-			memory: {
-				role: {
-					name: 'static-harvester',
-					data: {
-						sourceId: '5836b6de8b8b9619519ef7ca',
-						containerId: '585409e14a9a1e354b4fcad2',
-						workingPositionFlagName: 'W73S32-harvester-1'
+	if (room.energyCapacityAvailable - room.energyAvailable < 100) {
+		if (!Game.creeps['h1']) {
+			creepCreator.createCreep({
+				spawn: Game.spawns['W73S32-1'],
+				body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
+				name: 'h1',
+				memory: {
+					role: {
+						name: 'static-harvester',
+						data: {
+							sourceId: '5836b6de8b8b9619519ef7ca',
+							containerId: '585409e14a9a1e354b4fcad2',
+							workingPositionFlagName: 'W73S32-harvester-1'
+						}
 					}
 				}
-			}
-		});
-	} else if (!Game.creeps['h2']) {
-		creepCreator.createCreep({
-			spawn: Game.spawns['W73S32-1'],
-			body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
-			name: 'h2',
-			memory: {
-				role: {
-					name: 'static-harvester',
-					data: {
-						sourceId: '5836b6de8b8b9619519ef7cc',
-						containerId: '5854d1e2e745b9e36a10abe4',
-						workingPositionFlagName: 'W73S32-harvester-2'
+			});
+		} else if (!Game.creeps['h2']) {
+			creepCreator.createCreep({
+				spawn: Game.spawns['W73S32-1'],
+				body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 3},
+				name: 'h2',
+				memory: {
+					role: {
+						name: 'static-harvester',
+						data: {
+							sourceId: '5836b6de8b8b9619519ef7cc',
+							containerId: '5854d1e2e745b9e36a10abe4',
+							workingPositionFlagName: 'W73S32-harvester-2'
+						}
 					}
 				}
-			}
-		});
-	} else if (!Game.creeps['u1']) {
-		global.creepCreator.createCreep({
-			spawn: Game.spawns['W73S32-1'],
-			body: {[WORK]: 8, [CARRY]: 1, [MOVE]: 4},
-			name: 'u1',
-			memory: {
-				role: {
-					name: 'static-upgrader',
-					data: {
-						fromId: '585421191717308736b8fa8c',
-						workingPositionFlagName: 'W73S32-upgrader-1'
+			});
+		} else if (!Game.creeps['u1']) {
+			global.creepCreator.createCreep({
+				spawn: Game.spawns['W73S32-1'],
+				body: {[WORK]: 8, [CARRY]: 1, [MOVE]: 4},
+				name: 'u1',
+				memory: {
+					role: {
+						name: 'static-upgrader',
+						data: {
+							fromId: '585421191717308736b8fa8c',
+							workingPositionFlagName: 'W73S32-upgrader-1'
+						}
 					}
 				}
-			}
-		});
+			});
+		}
 	}
 }
 
