@@ -10,7 +10,7 @@ export function run(creep: Creep) {
 	 */
 	if (data.renew) {
 		if (data.renew.shouldRenew !== false) {
-			if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 200) {
+			if (creep.room.energyCapacityAvailable - creep.room.energyAvailable > 200) {
 				data.renew.shouldRenew = false;
 			} else if (creep.ticksToLive <= data.renew.renewWhen) {
 				data.renew.shouldRenew = true;
