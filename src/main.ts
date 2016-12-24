@@ -1,6 +1,6 @@
 import {creepCreator} from './components/creeps/utils/creep-creator';
 import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
-import * as Config from './config/config';
+import * as Config from './config';
 
 import {log} from './components/support/log';
 global.creepCreator = creepCreator;
@@ -34,7 +34,12 @@ export function loop() {
 	for (let i in Game.rooms) {
 		let room: Room = Game.rooms[i];
 
-		CreepManagerLegacy.run(room);
+		if (room.name === 'W73S32') {
+			CreepManagerLegacy.run(room);
+		} else {
+			// TODO:
+		}
+
 	}
 
 	// TODO: extract method

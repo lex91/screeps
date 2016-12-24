@@ -1,4 +1,4 @@
-import * as Config from '../../config/config';
+import * as Config from '../../config';
 import {LogLevels} from './log.levels';
 
 // <caller> (<source>:<line>:<column>)
