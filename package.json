@@ -16,7 +16,7 @@
     "start": "gulp watch",
     "prod": "gulp watch --target prod",
     "test": "gulp test",
-    "lint": "tslint \"src/**/*.ts\"",
+    "tslint": "tslint \"src/**/*.ts\"",
     "typings": "typings",
     "jshint-gulp": "jshint gulpfile.js libs/gulp-dot-flatten.js libs/gulp-screeps-upload.js"
   },

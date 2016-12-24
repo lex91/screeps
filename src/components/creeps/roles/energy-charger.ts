@@ -93,7 +93,7 @@ export function run(creep: Creep) {
 					if (structure.structureType === STRUCTURE_TOWER) {
 						const energyStructire = <Tower> (structure);
 
-						return energyStructire.energy < energyStructire.energyCapacity;
+						return energyStructire.energyCapacity - energyStructire.energy > 50;
 					}
 
 					return false;

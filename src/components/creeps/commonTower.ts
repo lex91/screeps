@@ -79,6 +79,21 @@ function _calculateRepairingPriority(structure: Structure): number {
 			}
 
 			break;
+
+		case STRUCTURE_RAMPART:
+			if (structure.hits > 200000) {
+				return 6;
+			} else if (structure.hits > 100000) {
+				return 5;
+			} else if (structure.hits > 50000) {
+				return 4;
+			} else if (structure.hits > 25000) {
+				return 3;
+			} else if (structure.hits > 10000) {
+				return 2;
+			}
+
+			break;
 		case STRUCTURE_CONTAINER:
 			if (durability > 0.85) {
 				return 5;

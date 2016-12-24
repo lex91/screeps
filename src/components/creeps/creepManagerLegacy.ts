@@ -16,7 +16,9 @@ export function run(room: Room): void {
 	for (let creepName in Game.creeps) {
 		const creep = Game.creeps[creepName];
 		if (creep.memory.room === room.name) {
-			runCreepRole(creep);
+			if (!creep.spawning) {
+				runCreepRole(creep);
+			}
 		}
 	}
 

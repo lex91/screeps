@@ -8,7 +8,7 @@ export function run(creep: Creep) {
 	 Transporting:
 	 */
 	if (creep.carry[RESOURCE_ENERGY] === 0) {
-		if (creep.ticksToLive < 50) {
+		if (creep.ticksToLive < 25) {
 			log.info(`Builder only: creep ${creep.name} is dying!`);
 			return;
 		}
