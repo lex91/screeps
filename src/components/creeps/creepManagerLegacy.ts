@@ -49,6 +49,64 @@ function runCreepRole(creep: Creep) {
 			default:
 			// logging error below
 		}
+	} else if (roleMemory === 'builder') { // TODO: remove
+
+		if (creep.room.name !== 'W73S33') {
+			creep.moveTo(26, 49);
+			return;
+		}
+
+		let targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
+		if (targets.length === 0) {
+			return;
+		}
+		let energySource: any = Game.getObjectById('5836b6de8b8b9619519ef7d0');
+
+		if (energySource.energy === 0) {
+			energySource = Game.getObjectById('5836b6de8b8b9619519ef7cf');
+		}
+
+		let isBuilding = Boolean(creep.memory.isBuilding);
+		const workPartsCount = creep.body.reduce((result, bodyPart) => {
+			return bodyPart.type === 'work' ? result + 1 : result;
+		}, 0);
+
+		if (isBuilding) {
+			isBuilding = creep.carry.energy >= workPartsCount;
+		} else {
+			isBuilding = creep.carry.energy > creep.carryCapacity - workPartsCount * 2;
+		}
+
+		if (isBuilding) {
+			_moveToBuild(creep, targets[0]);
+		} else {
+			_moveToHarvest(creep, energySource);
+		}
+
+		creep.memory.isBuilding = isBuilding;
+
+
+		function _tryHarvest(creep1: any, target1: any) {
+			return creep1.harvest(target1);
+		}
+
+		function _moveToHarvest(creep1: any, target1: any) {
+			if (_tryHarvest(creep1, target1) === ERR_NOT_IN_RANGE) {
+				creep1.moveTo(target1);
+			}
+		}
+
+		function _tryToBuild(creep1: any, target1: any) {
+			return creep1.build(target1);
+		}
+
+		function _moveToBuild(creep1: any, target1: any) {
+			if (_tryToBuild(creep1, target1) === ERR_NOT_IN_RANGE) {
+				creep1.moveTo(target1);
+			}
+		}
+
+		return;
 	}
 
 	log.debug(`Creep with unknown role found: ${creep.name}`);
@@ -94,7 +152,7 @@ function _buildMissingCreeps(room: Room) {
 		} else if (!Game.creeps['u1']) {
 			global.creepCreator.createCreep({
 				spawn: Game.spawns['W73S32-1'],
-				body: {[WORK]: 10, [CARRY]: 1, [MOVE]: 2},
+				body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 2},
 				name: 'u1',
 				memory: {
 					role: {
@@ -107,6 +165,16 @@ function _buildMissingCreeps(room: Room) {
 					room: room.name
 				}
 			});
+		// } else if (!Game.creeps['b1']) {
+		// 	global.creepCreator.createCreep({
+		// 		spawn: Game.spawns['W73S32-1'],
+		// 		body: { [WORK]: 6, [CARRY]: 6, [MOVE]: 12 },
+		// 		name: 'b1',
+		// 		memory: {
+		// 			role: 'builder',
+		// 			room: room.name
+		// 		}
+		// 	});
 		}
 	}
 }

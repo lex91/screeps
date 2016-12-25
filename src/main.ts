@@ -3,6 +3,8 @@ import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
 import * as Config from './config';
 
 import {log} from './components/support/log';
+import {RoomConfig} from './room/config';
+import {RoomManager} from './room/manager';
 global.creepCreator = creepCreator;
 
 // Any code written outside the `loop()` method is executed only when the
@@ -17,30 +19,165 @@ if (Config.USE_PATHFINDER) {
 
 log.info('load');
 
-/**
- * Screeps system expects this 'loop' method in main.js to moveTo the
- * application. If we have this line, we can be sure that the globals are
- * bootstrapped properly and the game loop is executed.
- * http://support.screeps.com/hc/en-us/articles/204825672-New-main-loop-architecture
- *
- * @export
- */
+type Rooms = Map<string, RoomManager>;
+type RoleChooserParams = {
+	creepName: string,
+	rooms: Rooms
+};
+const roomConfigs: Map<string, RoomConfig> = new Map([
+	['W73S33', {
+		creeps: new Map<string, any>([
+			['ec', {
+				role: {
+					'energy-charger': {
+						fromId: '585fa6042ceb499610f47f8d',
+						fromMinAmount: 0,
+						renew: {
+
+						}
+					},
+					'renewable': {
+						when: 300,
+						until: 500
+					},
+					roleChooser: (_params: RoleChooserParams): string => {
+						const creep = Game.creeps[_params.creepName];
+
+
+						return 'energy-charger';
+					}
+				},
+				body: {
+					[CARRY]: 4,
+					[MOVE]: 2
+				},
+				count: 1
+			}],
+			['h1', {
+				role: {
+					'static-harvester': {
+						sourceId: '5836b6de8b8b9619519ef7d0',
+						containerId: '585fa6042ceb499610f47f8d',
+						workingPositionFlagName: 'W73S33-harvester-1'
+					},
+					roleChooser: (_params: RoleChooserParams): string => {
+						return 'static-harvester';
+					}
+				},
+				body: {
+					[WORK]: 2,
+					[CARRY]: 1,
+					[MOVE]: 1
+				},
+				count: 1
+			}],
+			// ['t1', {
+			// 	role: {
+			// 		'energy-transporter': {
+			// 			fromId: '585fa6042ceb499610f47f8d',
+			// 			fromMinAmount: 1000,
+			// 			toId: '585fcce4282455ed3896accb',
+			// 			renew: {
+			// 				renewWhen: 300,
+			// 				renewUntil: 500
+			// 			}
+			// 		},
+			// 		roleChooser: (params: RoleChooserParams): string => {
+			// 			return 'energy-transporter';
+			// 		}
+			// 	},
+			// 	body: {
+			// 		[CARRY]: 4,
+			// 		[MOVE]: 2
+			// 	},
+			// 	count: 1
+			// }],
+			['tu', {
+				role: {
+					'energy-transporter': {
+						fromId: '585fa6042ceb499610f47f8d',
+						fromMinAmount: 1000,
+						toId: '585fcce4282455ed3896accb',
+						renew: {
+							renewWhen: 300,
+							renewUntil: 500
+						}
+					},
+					roleChooser: (_params: RoleChooserParams): string => {
+						return 'energy-transporter';
+					}
+				},
+				body: {
+					[CARRY]: 4,
+					[MOVE]: 2
+				},
+				count: 1
+			}],
+			['u', {
+				role: {
+					'static-upgrader': {
+						fromId: '585fcce4282455ed3896accb',
+						workingPositionFlagName: 'W73S33-upgrader-1'
+					},
+					roleChooser: (_params: RoleChooserParams): string => {
+						return 'static-upgrader';
+					}
+				},
+				body: {
+					[WORK]: 2,
+					[CARRY]: 1,
+					[MOVE]: 1
+				},
+				count: 1
+			}]
+		])
+	}]
+]);
+
+
 export function loop() {
-	// Check memory for null or out of bounds custom objects
-	if (!Memory.uuid || Memory.uuid > 100) {
-		Memory.uuid = 0;
-	}
+	const rooms: Rooms = new Map();
 
-	for (let i in Game.rooms) {
-		let room: Room = Game.rooms[i];
-
-		if (room.name === 'W73S32') {
-			CreepManagerLegacy.run(room);
+	for (const [roomName, roomConfig] of roomConfigs) {
+		const roomObject = Game.rooms[roomName];
+		if (roomObject) {
+			rooms.set(roomName, new RoomManager({
+				room: roomObject,
+				config: roomConfig
+			}));
 		} else {
-			// TODO:
+			log.error(`Have config for room ${roomName}, but can't get room object`);
 		}
-
 	}
+
+	// TODO: add data to rooms objects and run
+	for (let spawnName in Game.spawns) {
+		const spawn = Game.spawns[spawnName];
+		const roomManager = rooms.get(spawn.room.name);
+
+		if (roomManager) {
+			roomManager.addSpawn(spawn);
+		} else {
+			log.debug(`There is spawn ${spawn.name} in room without config - ${spawn.room.name}`);
+		}
+	}
+
+	// TODO: add data to rooms objects and run
+	for (let creepName in Game.creeps) {
+		const creep = Game.creeps[creepName];
+		const roomManager = rooms.get(creep.memory.room);
+
+		if (roomManager) {
+			roomManager.addCreep(creep);
+		} else {
+			log.debug(`There is creep ${creep.name} in room without config - ${creep.memory.room}`);
+		}
+	}
+
+
+	(<RoomManager> (rooms.get('W73S33'))).run();
+	CreepManagerLegacy.run(Game.rooms['W73S32']);
+
 
 	// TODO: extract method
 	// Clears any non-existing creep memory.
