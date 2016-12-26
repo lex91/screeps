@@ -1,19 +1,12 @@
-export abstract class Task {
-
-	constructor() {
-		// TODO:
-	}
+import {RunResult} from '../run-result';
 
 
-	public abstract run(runParams: RunParams): TaskResult;
+export interface Task {
+	name: string;
+	run(creep: RunParams): RunResult;
 }
 
 type RunParams = {
 	creep: Creep,
 	TaskData: any
-}
-
-export enum TaskResult {
-	DONE,
-	IN_PROGRESS
 }

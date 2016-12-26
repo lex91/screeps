@@ -30,19 +30,18 @@ const roomConfigs: Map<string, RoomConfig> = new Map([
 			['ec', {
 				role: {
 					'energy-charger': {
-						fromId: '585fa6042ceb499610f47f8d',
-						fromMinAmount: 0,
+						from: {
+							id: '585fa6042ceb499610f47f8d',
+							minAmount: 0
+						},
 						renew: {
-
+							when: 300,
+							until: 500
 						}
-					},
-					'renewable': {
-						when: 300,
-						until: 500
 					},
 					roleChooser: (_params: RoleChooserParams): string => {
 						const creep = Game.creeps[_params.creepName];
-
+						console.log(creep);
 
 						return 'energy-charger';
 					}
@@ -78,8 +77,8 @@ const roomConfigs: Map<string, RoomConfig> = new Map([
 			// 			fromMinAmount: 1000,
 			// 			toId: '585fcce4282455ed3896accb',
 			// 			renew: {
-			// 				renewWhen: 300,
-			// 				renewUntil: 500
+			// 				when: 300,
+			// 				until: 500
 			// 			}
 			// 		},
 			// 		roleChooser: (params: RoleChooserParams): string => {
@@ -95,12 +94,14 @@ const roomConfigs: Map<string, RoomConfig> = new Map([
 			['tu', {
 				role: {
 					'energy-transporter': {
-						fromId: '585fa6042ceb499610f47f8d',
-						fromMinAmount: 1000,
+						from: {
+							id: '585fa6042ceb499610f47f8d',
+							minAmount: 1000
+						},
 						toId: '585fcce4282455ed3896accb',
 						renew: {
-							renewWhen: 300,
-							renewUntil: 500
+							when: 300,
+							until: 500
 						}
 					},
 					roleChooser: (_params: RoleChooserParams): string => {
@@ -116,7 +117,10 @@ const roomConfigs: Map<string, RoomConfig> = new Map([
 			['u', {
 				role: {
 					'static-upgrader': {
-						fromId: '585fcce4282455ed3896accb',
+						from: {
+							id: '585fcce4282455ed3896accb',
+							minAmount: 1000
+						},
 						workingPositionFlagName: 'W73S33-upgrader-1'
 					},
 					roleChooser: (_params: RoleChooserParams): string => {

@@ -57,9 +57,7 @@ function runCreepRole(creep: Creep) {
 		}
 
 		let targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
-		if (targets.length === 0) {
-			return;
-		}
+
 		let energySource: any = Game.getObjectById('5836b6de8b8b9619519ef7d0');
 
 		if (energySource.energy === 0) {
@@ -78,8 +76,28 @@ function runCreepRole(creep: Creep) {
 		}
 
 		if (isBuilding) {
-			_moveToBuild(creep, targets[0]);
+			if (targets.length === 0) {
+				let renewTarget = Game.getObjectById<Structure>(creep.memory.renewTarget);
+				if (!renewTarget || (renewTarget.hits / renewTarget.hitsMax > 0.99)) {
+					const renewTargets = creep.room.find<Structure>(FIND_STRUCTURES, {
+						filter: (structure: Structure) => (structure.hits / structure.hitsMax < 0.8) && (
+							structure.structureType === STRUCTURE_ROAD ||
+							structure.structureType === STRUCTURE_CONTAINER
+						)
+					});
+					if (renewTargets.length === 0) {
+						return;
+					}
+					renewTargets.sort((a: Structure, b: Structure) => ((a.hits / a.hitsMax) - (b.hits / b.hitsMax)));
+					renewTarget = renewTargets[0];
+					creep.memory.renewTarget = renewTarget.id;
+				}
+				_moveToRepair(creep, renewTarget);
+			} else {
+				_moveToBuild(creep, targets[0]);
+			}
 		} else {
+			creep.memory.renewTarget = null;
 			_moveToHarvest(creep, energySource);
 		}
 
@@ -102,6 +120,12 @@ function runCreepRole(creep: Creep) {
 
 		function _moveToBuild(creep1: any, target1: any) {
 			if (_tryToBuild(creep1, target1) === ERR_NOT_IN_RANGE) {
+				creep1.moveTo(target1);
+			}
+		}
+
+		function _moveToRepair(creep1: any, target1: any) {
+			if (creep1.repair(target1) === ERR_NOT_IN_RANGE) {
 				creep1.moveTo(target1);
 			}
 		}
@@ -152,7 +176,7 @@ function _buildMissingCreeps(room: Room) {
 		} else if (!Game.creeps['u1']) {
 			global.creepCreator.createCreep({
 				spawn: Game.spawns['W73S32-1'],
-				body: {[WORK]: 5, [CARRY]: 1, [MOVE]: 2},
+				body: {[WORK]: 15, [CARRY]: 1, [MOVE]: 5},
 				name: 'u1',
 				memory: {
 					role: {
@@ -165,16 +189,16 @@ function _buildMissingCreeps(room: Room) {
 					room: room.name
 				}
 			});
-		// } else if (!Game.creeps['b1']) {
-		// 	global.creepCreator.createCreep({
-		// 		spawn: Game.spawns['W73S32-1'],
-		// 		body: { [WORK]: 6, [CARRY]: 6, [MOVE]: 12 },
-		// 		name: 'b1',
-		// 		memory: {
-		// 			role: 'builder',
-		// 			room: room.name
-		// 		}
-		// 	});
+		} else if (!Game.creeps['b1']) {
+			global.creepCreator.createCreep({
+				spawn: Game.spawns['W73S32-1'],
+				body: {[WORK]: 6, [CARRY]: 6, [MOVE]: 12},
+				name: 'b1',
+				memory: {
+					role: 'builder',
+					room: room.name
+				}
+			});
 		}
 	}
 }

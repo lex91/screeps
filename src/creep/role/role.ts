@@ -1,16 +1,22 @@
+import {RunResult} from '../run-result';
+
+
 export abstract class Role {
-	protected tasks: Array<>;
+	public name: string;
+	protected _taskMap: Map<string, (...args: Array<any>) => any>;
+	protected _taskStack: Array<string>;
 
 	constructor() {
-		// TODO:
+		this._taskMap = new Map();
+		this._taskStack = [];
 	}
 
 
-	run(params: Params) {
-
+	public run(params: Params): RunResult {
+		throw params;
 	}
 
-	needToRun
+
 }
 
 type Params = {
