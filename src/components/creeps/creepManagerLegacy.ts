@@ -6,7 +6,7 @@ import * as builderOnly from './roles/builder-only';
 
 import * as commonTower from './commonTower';
 
-import {creepCreator} from './utils/creep-creator';
+import {creepCreator} from '../../services/creep-creator';
 
 // import * as Config from '../../config';
 import {log} from '../support/log';

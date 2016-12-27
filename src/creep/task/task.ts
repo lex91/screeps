@@ -1,45 +1,23 @@
-export type TaskIn = {
-	creep: Creep,
-	data: any
-};
+import {ITask} from './i-task';
 
 
-export type TaskOut = {
-	status: TaskStatus,
-	data: any
-};
+export abstract class Task implements ITask{
+	protected _name: string;
+	protected _runDataResolver: () => any;
 
-export type TaskParams = {
-	inResolver: (...args: Array<any>) => any,
-	outResolver: (taskOut: TaskOut) => void
-};
+	constructor(params: Params) {
+		this._name = params.name;
+		this._runDataResolver
+	};
 
-export enum TaskStatus {
-	DONE,
-	IN_PROGRESS
+	getName(): string {
+		return this._name;
+	};
+
+	run(creepparams: TaskIn);
 }
 
-
-export interface Task {
-	name: string;
-	run(creep: TaskIn): TaskOut;
-}
-
-
-export abstract class TaskSequence implements Task {
-	public name: string;
-	protected _taskMap: Map<string, TaskParams>;
-	protected _taskStack: Array<string>;
-
-	constructor() {
-		this._taskMap = new Map();
-		this._taskStack = [];
-	}
-
-
-	public run(params: TaskIn): TaskOut {
-		throw params;
-	}
-
-
-}
+type Params = {
+	name: string,
+	runDataResolver(...args: Array<any>): any,
+};

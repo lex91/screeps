@@ -1,10 +1,10 @@
-import {creepCreator} from './components/creeps/utils/creep-creator';
+import {creepCreator} from './services/creep-creator';
 import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
 import * as Config from './config';
 
 import {log} from './components/support/log';
 import {RoomConfig} from './room/config';
-import {RoomManager} from './room/manager';
+import {RoomManager} from './room/room-manager';
 global.creepCreator = creepCreator;
 
 // Any code written outside the `loop()` method is executed only when the

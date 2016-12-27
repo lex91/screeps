@@ -1,6 +1,6 @@
 import {RoomConfig} from './config';
 import {run as runUpgrader} from '../components/creeps/roles/upgrader';
-import {creepCreator} from '../components/creeps/utils/creep-creator';
+import {creepCreator} from '../services/creep-creator';
 
 
 export class RoomManager {
