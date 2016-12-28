@@ -1,23 +1,36 @@
-import {ITask} from './i-task';
+import {ITask, TaskStatus} from './i-task';
+import {CreepManager} from '../creep-manager';
 
 
 export abstract class Task implements ITask{
 	protected _name: string;
-	protected _runDataResolver: () => any;
+	protected _resultHandlers?: Map<TaskStatus, (params: any) => any>;
+	protected _defaultResultHandler?: (params: any) => any;
 
-	constructor(params: Params) {
+	constructor(params: ConstructorParams) {
 		this._name = params.name;
-		this._runDataResolver
+		this._resultHandlers = params.resultHandlers;
+		this._defaultResultHandler = params.defaultResultHandler;
 	};
 
-	getName(): string {
+	public getName(): string {
 		return this._name;
 	};
 
-	run(creepparams: TaskIn);
-}
+	/**
+	 * method should call proper result handler
+	 */
+	abstract run(creep: CreepManager, state?: any): void;
 
-type Params = {
+	protected _resolveResultHandler(taskResult: TaskStatus): number|(any)=>any {
+		let handler = this._resultHandlers.get(taskResult);
+
+		return
+	}
+}
+type x = number | string | ()=>any;
+type ConstructorParams = {
 	name: string,
-	runDataResolver(...args: Array<any>): any,
+	resultHandlers?: Map<TaskStatus, (params: any) => any>,
+	defaultResultHandler?: (params: any) => any,
 };

@@ -22,5 +22,5 @@ export enum TaskStatus {
 
 export interface ITask {
 	getName(): string;
-	run(creep: CreepManager, params?: any): void;
+	run(creep: CreepManager, state?: any): void;
 }
