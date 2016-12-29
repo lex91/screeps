@@ -6,9 +6,8 @@ export type TaskIn = {
 	data?: any
 };
 
-
-export type TaskOut = {
-	status: TaskStatus,
+export type TaskRunResult = {
+	taskStatus: TaskStatus,
 	data?: any
 };
 
@@ -22,5 +21,5 @@ export enum TaskStatus {
 
 export interface ITask {
 	getName(): string;
-	run(creep: CreepManager, state?: any): void;
+	run(creep: CreepManager, state?: any): TaskRunResult;
 }

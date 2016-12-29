@@ -1,47 +1,41 @@
 import {TaskOut, TaskIn, ITask, TaskStatus} from './i-task';
 import {taskHub} from '../../services/task-hub';
+import {Task, TaskConstructorParams, TaskRunResult} from './task';
+import {CreepManager} from '../creep-manager';
 
 
-export type TaskResolver = {
-	resolveIn(...args: Array<any>): any,
-	resolveOut(taskOut: TaskOut): void
-};
-
-export abstract class TaskSequence implements ITask {
-	protected _name: string;
-	protected _taskMap: Map<string, TaskResolver>;
+export abstract class TaskSequence extends Task {
+	// protected _taskMap: Map<string, TaskResolver>;
 	protected _taskStack: Array<string>;
 
-	constructor() {
-		this._taskMap = new Map();
-		this._taskStack = [];
+	constructor(params: TaskConstructorParams) {
+		super(params);
 	}
 
-	public getName():string {
-		return this._name;
-	}
-
-	public run(params: TaskIn): TaskOut {
+	public run(creep: CreepManager, state?: any): TaskRunResult {
 		const currentTaskName = this._taskStack.pop();
-
 		if (!currentTaskName) {
-			return {status: TaskStatus.DONE};
+			return {taskStatus: TaskStatus.DONE};
 		}
 
 		const task = taskHub.getTask(currentTaskName);
-		const taskResolver = this._taskMap.get(currentTaskName);
-		if (!task || !taskResolver) {
+		if (!task) {
 			return {
-				status: TaskStatus.ERROR,
+				taskStatus: TaskStatus.ERROR,
 				data: {
 					message: `Can't find task or params for name ${currentTaskName}!`
 				}
 			}
 		}
 
-		// TODO: хрень какая-то
-		// task.run(taskResolver.resolveIn())
+		return task.run(creep, state);
 	}
 
 
 }
+
+export type TaskConstructorParams = {
+	name: string,
+	resultHandlers?: Map<TaskStatus, (params: any) => any>,
+	defaultResultHandler?: (params: any) => any,
+};
