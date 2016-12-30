@@ -1,11 +1,3 @@
-import {CreepManager} from '../creep-manager';
-
-
-export type TaskIn = {
-	creep: CreepManager,
-	data?: any
-};
-
 export type TaskRunResult = {
 	taskStatus: TaskStatus,
 	data?: any
@@ -21,5 +13,5 @@ export enum TaskStatus {
 
 export interface ITask {
 	getName(): string;
-	run(creep: CreepManager, state?: any): TaskRunResult;
+	run(data?: any): TaskRunResult;
 }
