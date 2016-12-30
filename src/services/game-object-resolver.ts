@@ -5,7 +5,7 @@ class GameCache {
 		this._idCache = new Map();
 	}
 
-	getObjectById<T>(id: string): T|null {
+	public getObjectById<T>(id: string): T|null {
 		let result = this._idCache.get(id);
 		if (!result) {
 			result = Game.getObjectById<T>(id);
@@ -17,6 +17,5 @@ class GameCache {
 }
 
 const gameCache = new GameCache();
-
 
 export {gameCache};

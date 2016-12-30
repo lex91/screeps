@@ -1,13 +1,13 @@
 import {RoomConfig} from './config';
-import {run as runUpgrader} from '../components/creeps/roles/upgrader';
 import {creepCreator} from '../services/creep-creator';
+import {CreepManager} from '../creep/creep-manager';
 
 
 export class RoomManager {
 	protected _room: Room;
 	protected _config: RoomConfig;
 	protected _spawns: Array<Spawn>;
-	protected _creeps: Array<Creep>;
+	protected _creeps: Array<CreepManager>;
 
 	constructor(params: Params) {
 		this._room = params.room;
@@ -20,10 +20,10 @@ export class RoomManager {
 
 	public run(): void {
 
-		for (const creep of this._creeps) {
-			// TODO:
-			runUpgrader(creep);
-		}
+		// for (const creep of this._creeps) {
+		// 	// TODO:
+		// 	runUpgrader(creep);
+		// }
 
 		// TODO:
 		for (const spawn of this._spawns) {
@@ -45,7 +45,7 @@ export class RoomManager {
 
 
 	public addCreep(creep: Creep) {
-		this._creeps.push(creep);
+		this._creeps.push(new CreepManager(creep));
 	}
 }
 

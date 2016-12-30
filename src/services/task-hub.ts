@@ -1,4 +1,4 @@
-import {ITask} from '../creep/task/i-task';
+import {ITask} from '../creep/task/base/i-task';
 
 
 class TaskHub {
@@ -12,7 +12,7 @@ class TaskHub {
 		}
 	}
 
-	getTask(taskName: string): ITask|null {
+	public getTask(taskName: string): ITask|null {
 		return this._taskMap.get(taskName) || null;
 	}
 }

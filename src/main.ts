@@ -1,8 +1,8 @@
 import {creepCreator} from './services/creep-creator';
-import * as CreepManagerLegacy from './components/creeps/creepManagerLegacy';
+import * as CreepManagerLegacy from './componentsLegacy/creeps/creepManagerLegacy';
 import * as Config from './config';
 
-import {log} from './components/support/log';
+import {log} from './componentsLegacy/support/log';
 import {RoomConfig} from './room/config';
 import {RoomManager} from './room/room-manager';
 global.creepCreator = creepCreator;
