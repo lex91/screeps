@@ -1,4 +1,4 @@
-import {ITask, TaskRunResult} from './i-task';
+import {ITask, TaskRunResult, TaskRunParams} from './i-task';
 import {CreepManager} from '../../creep-manager';
 
 
@@ -15,7 +15,7 @@ export abstract class Task implements ITask {
 		return this._name;
 	};
 
-	public abstract run(data?: any): TaskRunResult;
+	public abstract run(params: TaskRunParams): TaskRunResult;
 }
 
 type TaskConstructorParams = {

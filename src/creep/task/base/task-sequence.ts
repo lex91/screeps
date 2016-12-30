@@ -1,4 +1,4 @@
-import {ITask, TaskStatus, TaskRunResult} from './i-task';
+import {ITask, TaskStatus, TaskRunResult, TaskRunParams} from './i-task';
 import {Task} from './task';
 
 
@@ -6,7 +6,7 @@ export abstract class TaskSequence extends Task {
 	protected _tasks: Map<string, TaskSequenceItem>;
 	protected _runStack: Array<string>;
 
-	public run(data?: any): TaskRunResult {
+	public run(params: TaskRunParams): TaskRunResult {
 		const currentTaskName = this._runStack.pop();
 		if (!currentTaskName) {
 			return {taskStatus: TaskStatus.DONE};
@@ -26,7 +26,7 @@ export abstract class TaskSequence extends Task {
 		if (taskSequenceItem.data !== undefined) {
 			subtaskData.data = taskSequenceItem.data;
 		} else if (typeof taskSequenceItem.dataResolver === 'function') {
-			subtaskData.data = taskSequenceItem.dataResolver(data);
+			subtaskData.data = taskSequenceItem.dataResolver(params.creepMemory);
 		}
 
 		return taskSequenceItem.task.run(subtaskData);

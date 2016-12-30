@@ -20,10 +20,9 @@ export class RoomManager {
 
 	public run(): void {
 
-		// for (const creep of this._creeps) {
-		// 	// TODO:
-		// 	runUpgrader(creep);
-		// }
+		for (const creep of this._creeps) {
+			creep.run();
+		}
 
 		// TODO:
 		for (const spawn of this._spawns) {
@@ -45,7 +44,10 @@ export class RoomManager {
 
 
 	public addCreep(creep: Creep) {
-		this._creeps.push(new CreepManager(creep));
+		this._creeps.push(new CreepManager({
+			creep: creep,
+			roomManager: this
+		}));
 	}
 }
 

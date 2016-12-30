@@ -176,7 +176,7 @@ function _buildMissingCreeps(room: Room) {
 		} else if (!Game.creeps['u1']) {
 			global.creepCreator.createCreep({
 				spawn: Game.spawns['W73S32-1'],
-				body: {[WORK]: 15, [CARRY]: 1, [MOVE]: 5},
+				body: {[WORK]: 14, [CARRY]: 1, [MOVE]: 4},
 				name: 'u1',
 				memory: {
 					role: {
@@ -192,7 +192,7 @@ function _buildMissingCreeps(room: Room) {
 		} else if (!Game.creeps['b1']) {
 			global.creepCreator.createCreep({
 				spawn: Game.spawns['W73S32-1'],
-				body: {[WORK]: 6, [CARRY]: 6, [MOVE]: 12},
+				body: {[WORK]: 4, [CARRY]: 4, [MOVE]: 4},
 				name: 'b1',
 				memory: {
 					role: 'builder',
