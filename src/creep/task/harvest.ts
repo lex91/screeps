@@ -1,47 +1,74 @@
 import {Task} from './base/task';
-import {TaskRunResult, TaskRunParams, TaskStatus} from './base/i-task';
+import {TaskRunResult, TaskStatus} from './base/i-task';
 import {CreepManager} from '../creep-manager';
 import {gameCache} from '../../services/game-cache';
 
 
-export class Harvest extends Task {
+type HarvestParams = {
+	sourceId: string;
+	carryCap?: {
+		threshold: number;
+		resource: string; // One of RESOURCE_* constants
+	};
+};
 
+export class Harvest extends Task {
 	constructor(params: {creep: CreepManager}) {
 		super({
 			name: 'Harvest',
-			creep: params.creep,
+			creep: params.creep
 		});
 	};
 
-	public run(params: TaskRunParams): TaskRunResult {
-		// TODO: check if creep can harvest
+	public run(params: HarvestParams): TaskRunResult {
+		const isFullEnough = (
+			params.carryCap && this._creep.getResource(params.carryCap.resource) >= params.carryCap.threshold ||
+			this._creep.getFreeCarry() === 0
+		);
+		if (isFullEnough) {
+			return {taskStatus: TaskStatus.NO_NEED_TO_RUN};
+		}
 
-		const {sourceId} = <HarvestMemory> (params.creepMemory);
-		const source: Source|null = sourceId ? gameCache.getObjectById<Source>(sourceId) : this._getClosestSource();
+		if (this._creep.isOrderConflicting({creepOrder: 'harvest'})) {
+			return {taskStatus: TaskStatus.ORDER_CONFLICT};
+		}
 
-		if (!source) {
+		if (!params.sourceId) {
 			return {
-				taskStatus: TaskStatus.CANT_RUN,
+				taskStatus: TaskStatus.ERROR,
 				data: {
-					message: `Creep ${this._creep.getName()} can't harvest - no source found.
-					Creep memory: ${JSON.stringify(params.creepMemory)}`
+					message: `No sourceId in creep memory`
 				}
 			};
 		}
 
-		// TODO: harvest
+		const source = gameCache.getObjectById<Source>(params.sourceId);
+		if (!source) {
+			return {
+				taskStatus: TaskStatus.ERROR,
+				data: {
+					message: `Can't harvest - no source found by id ${params.sourceId}`
+				}
+			};
+		}
 
-		return {
-			taskStatus: TaskStatus.IN_PROGRESS
-		};
+		const runResult = this._creep.harvest(source);
+
+		if (runResult instanceof Error) {
+			return {
+				taskStatus: TaskStatus.ERROR,
+				data: {
+					message: runResult.message
+				}
+			};
+		}
+
+		// TODO: Статусы обработать. + 11 и 14, их нет в мануале.
+		switch (runResult) {
+			case OK:
+				return {taskStatus: TaskStatus.DONE};
+			default:
+				return {taskStatus: TaskStatus.IN_PROGRESS};
+		}
 	};
-
-	protected _getClosestSource(): Source|null {
-		return null;
-	}
-}
-
-type HarvestMemory = {
-	sourceId?: string
-	// TODO: add carry cap
 }
