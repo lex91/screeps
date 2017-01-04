@@ -1,13 +1,20 @@
+import {CreepOrder} from "../../creep-manager";
+
+
 export type TaskRunResult = {
-	taskStatus: TaskStatus,
-	data?: any
+	taskStatus: TaskStatus;
+	taskName: string;
+	creepOrders?: {[key in CreepOrder]?: number};
+	message?: string
+	childTaskResults?: Array<TaskRunResult>
+	[key: string]: any
 };
 
 export enum TaskStatus {
 	DONE,
+	NO_NEED_TO_RUN,
 	IN_PROGRESS,
 	ORDER_CONFLICT,
-	NO_NEED_TO_RUN,
 	CANT_RUN,
 	ERROR
 }

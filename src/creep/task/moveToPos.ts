@@ -3,8 +3,8 @@ import {TaskRunResult, TaskStatus} from './base/i-task';
 import {CreepManager} from '../creep-manager';
 import {gameCache} from '../../services/game-cache';
 
-
-type HarvestParams = {
+// TODO: all!
+type MoveToPosParams = {
 	sourceId: string;
 	carryCap?: {
 		threshold: number;
@@ -12,15 +12,15 @@ type HarvestParams = {
 	};
 };
 
-export class Harvest extends Task {
+export class MoveToPos extends Task {
 	constructor(params: {creep: CreepManager}) {
 		super({
-			name: 'Harvest',
+			name: 'MoveToPos',
 			creep: params.creep
 		});
 	};
 
-	public run(params: HarvestParams): TaskRunResult {
+	public run(params: MoveToPosParams): TaskRunResult {
 		const result = {taskName: this.getName()};
 
 		const isFullEnough = (

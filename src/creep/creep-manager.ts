@@ -14,17 +14,19 @@ export type CreepOrder = 'attack'|'attackController'|'build'|'claimController'|'
 
 type CreepOrderParams = {
 	creepOrder: CreepOrder;
-	resourcesUsed?: StoreDefinition;
+	resourcesDelta?: StoreDefinition;
 }
 
-/** standard _creep method result or Error if method is conflicting */
-type CreepOrderResult = number|Error;
+type CreepOrderResult = {
+	creepOrder: CreepOrder;
+	result: number;
+}|Error;
 
 const MAX_ORDERS_PER_TURN = 16;
 
 export class CreepManager {
 	protected _creep: Creep;
-	protected _carryForecast: StoreDefinition;
+	protected _carryAvailable: StoreDefinition;
 	protected _roomManager: RoomManager;
 	protected _scheduledOrders: {[key in CreepOrder]?: CreepOrderParams};
 	protected static readonly _conflictingOrders = [
@@ -38,7 +40,7 @@ export class CreepManager {
 
 	constructor(params: CreepManagerConctructorParams) {
 		this._creep = params.creep;
-		this._carryForecast = Object.assign({}, params.creep.carry);
+		this._carryAvailable = Object.assign({}, params.creep.carry);
 		this._roomManager = params.roomManager;
 		this._scheduledOrders = {};
 	}
@@ -66,33 +68,35 @@ export class CreepManager {
 	}
 
 	public harvest(target: Source | Mineral): CreepOrderResult {
-		const orderParams: CreepOrderParams = {creepOrder: 'harvest'};
+		const creepOrder: CreepOrder = 'harvest';
+		const orderParams: CreepOrderParams = {creepOrder};
 
 		if (this.isOrderConflicting(orderParams)) {
 			return new Error('conflict');
 		}
 
-		const runResult = this._creep.harvest(target);
-		if (runResult === OK) {
+		const result = this._creep.harvest(target);
+		if (result === OK) {
 			this._addOrder(orderParams);
 		}
 
-		return runResult;
+		return {creepOrder, result};
 	}
 
-	public moveTo(target: RoomPosition): CreepOrderResult {
-		const orderParams: CreepOrderParams = {creepOrder: 'move'};
+	public moveToPos(target: RoomPosition): CreepOrderResult {
+		const creepOrder: CreepOrder = 'move';
+		const orderParams: CreepOrderParams = {creepOrder};
 
 		if (this.isOrderConflicting(orderParams)) {
 			return new Error('conflict');
 		}
 
-		const runResult = this._creep.moveTo(target);
-		if (runResult === OK) {
+		const result = this._creep.moveTo(target);
+		if (result === OK) {
 			this._addOrder(orderParams);
 		}
 
-		return runResult;
+		return {creepOrder, result};
 	}
 
 	public getName(): string {
@@ -104,6 +108,10 @@ export class CreepManager {
 	}
 
 	public isOrderConflicting(params: CreepOrderParams): boolean {
+		if (this._scheduledOrders[params.creepOrder]) {
+			return false;
+		}
+
 		for (const conflictingSet of CreepManager._conflictingOrders) {
 			if (conflictingSet.has(params.creepOrder)) {
 				for (const conflictingOrder of conflictingSet) {
@@ -114,9 +122,9 @@ export class CreepManager {
 			}
 		}
 
-		if (params.resourcesUsed) {
-			for (const resource in params.resourcesUsed) {
-				if (!(this._creep.carry[resource] >= params.resourcesUsed[resource])) {
+		if (params.resourcesDelta) {
+			for (const resource in params.resourcesDelta) {
+				if (this.getResourceAvailable(resource) < params.resourcesDelta[resource]) {
 					return false;
 				}
 			}
@@ -129,16 +137,13 @@ export class CreepManager {
 		return this._creep.carry[resource] || 0;
 	}
 
-	public getResourceForecast(resource: string): number {
-		return this._carryForecast[resource] || 0;
+	public getResourceAvailable(resource: string): number {
+		return this._carryAvailable[resource] || 0;
 	}
+
 
 	public getFreeCarry(): number {
 		return this._creep.carryCapacity - _.sum(this._creep.carry);
-	}
-
-	public getFreeCarryForecast(): number {
-		return this._creep.carryCapacity - _.sum(this._carryForecast);
 	}
 
 	protected _addOrder(params: CreepOrderParams) {
