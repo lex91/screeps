@@ -6,10 +6,8 @@ import {gameCache} from '../../services/game-cache';
 
 type HarvestParams = {
 	sourceId: string;
-	carryCap?: {
-		threshold: number;
-		resource: string; // One of RESOURCE_* constants
-	};
+	resource: string; // One of RESOURCE_* constants
+	carryCap?: number;
 };
 
 export class Harvest extends Task {
@@ -23,11 +21,7 @@ export class Harvest extends Task {
 	public run(params: HarvestParams): TaskRunResult {
 		const result = {taskName: this.getName()};
 
-		const isFullEnough = (
-			params.carryCap && this._creep.getResource(params.carryCap.resource) >= params.carryCap.threshold ||
-			this._creep.getFreeCarry() === 0
-		);
-		if (isFullEnough) {
+		if (this._isFullEnough(params.resource, params.carryCap)) {
 			return Object.assign(result, {taskStatus: TaskStatus.NO_NEED_TO_RUN});
 		}
 
@@ -50,7 +44,7 @@ export class Harvest extends Task {
 			});
 		}
 
-		const runResult = this._creep.harvest(source);
+		const runResult = this._creep.harvest(source, params.resource);
 
 		if (runResult instanceof Error) {
 			return Object.assign(result, {
@@ -65,6 +59,11 @@ export class Harvest extends Task {
 
 		switch (runResult.result) {
 			case OK:
+				return Object.assign(result, {
+					taskStatus: this._isFullEnough(params.resource, params.carryCap) ?
+						TaskStatus.DONE :
+						TaskStatus.IN_PROGRESS
+				});
 			case ERR_TIRED:
 			case ERR_NOT_ENOUGH_RESOURCES:
 				return Object.assign(result, {taskStatus: TaskStatus.IN_PROGRESS});
@@ -82,5 +81,13 @@ export class Harvest extends Task {
 					message: 'Unexpected CreepOrderResult'
 				});
 		}
-	};
+	}
+
+	protected _isFullEnough(resource: string, carryCap?: number): boolean {
+		if (carryCap) {
+			return this._creep.getResourceForecast(resource) >= carryCap;
+		}
+
+		return this._creep.getFreeCarryForecast() <= 0;
+	}
 }

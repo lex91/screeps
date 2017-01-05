@@ -5,11 +5,8 @@ import {gameCache} from '../../services/game-cache';
 
 // TODO: all!
 type MoveToPosParams = {
-	sourceId: string;
-	carryCap?: {
-		threshold: number;
-		resource: string; // One of RESOURCE_* constants
-	};
+	pos: RoomPosition;
+	range?: number; //Range to pos for 'Done' state
 };
 
 export class MoveToPos extends Task {
@@ -23,11 +20,12 @@ export class MoveToPos extends Task {
 	public run(params: MoveToPosParams): TaskRunResult {
 		const result = {taskName: this.getName()};
 
-		const isFullEnough = (
+		params.pos.isEqualTo()
+		const isCloseEnough = (
 			params.carryCap && this._creep.getResource(params.carryCap.resource) >= params.carryCap.threshold ||
-			this._creep.getFreeCarry() === 0
+			this._creep.getFreeCarryForecast() === 0
 		);
-		if (isFullEnough) {
+		if (isCloseEnough) {
 			return Object.assign(result, {taskStatus: TaskStatus.NO_NEED_TO_RUN});
 		}
 

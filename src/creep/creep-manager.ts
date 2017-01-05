@@ -12,10 +12,15 @@ export type CreepOrder = 'attack'|'attackController'|'build'|'claimController'|'
 	'move'|'moveByPath'|'pickup'|'rangedAttack'|'rangedHeal'|'rangedMassAttack'|'repair'|'reserveController'|
 	'signController'|'transfer'|'upgradeController'|'withdraw';
 
+type CarryDelta = {
+	income?: StoreDefinition;
+	outcome?: StoreDefinition;
+};
+
 type CreepOrderParams = {
 	creepOrder: CreepOrder;
-	resourcesDelta?: StoreDefinition;
-}
+	carryDelta?: CarryDelta;
+};
 
 type CreepOrderResult = {
 	creepOrder: CreepOrder;
@@ -25,9 +30,10 @@ type CreepOrderResult = {
 const MAX_ORDERS_PER_TURN = 16;
 
 export class CreepManager {
-	protected _creep: Creep;
-	protected _carryAvailable: StoreDefinition;
 	protected _roomManager: RoomManager;
+
+	protected _creep: Creep;
+	protected _carryDelta: CarryDelta;
 	protected _scheduledOrders: {[key in CreepOrder]?: CreepOrderParams};
 	protected static readonly _conflictingOrders = [
 		new Set<CreepOrder>([
@@ -40,11 +46,15 @@ export class CreepManager {
 
 	constructor(params: CreepManagerConctructorParams) {
 		this._creep = params.creep;
-		this._carryAvailable = Object.assign({}, params.creep.carry);
+		this._carryDelta = {
+			income: {},
+			outcome: {},
+		};
 		this._roomManager = params.roomManager;
 		this._scheduledOrders = {};
 	}
 
+	// TODO: move to role base class
 	public run(): void {
 		const task = this._createTaskObject();
 		if (!task) {
@@ -67,9 +77,28 @@ export class CreepManager {
 		} while (this._canRunAgain(taskResult));
 	}
 
-	public harvest(target: Source | Mineral): CreepOrderResult {
+	public harvest(target: Source | Mineral, resource: string): CreepOrderResult {
+		const isResourceCorrect = resource === (
+				target instanceof Source ? RESOURCE_ENERGY : target.mineralType
+			);
+		if (!isResourceCorrect) {
+			return new Error('resource-wrong');
+		}
+
 		const creepOrder: CreepOrder = 'harvest';
-		const orderParams: CreepOrderParams = {creepOrder};
+		const orderParams: CreepOrderParams = {
+			creepOrder,
+			carryDelta: {
+				income: {
+					[resource]: Math.max(
+						CreepManager._getSourceAvailableResources(target),
+						this._creep.getActiveBodyparts(WORK) * (
+							target instanceof Source ? HARVEST_POWER : HARVEST_MINERAL_POWER
+						)
+					)
+				}
+			}
+		};
 
 		if (this.isOrderConflicting(orderParams)) {
 			return new Error('conflict');
@@ -122,10 +151,15 @@ export class CreepManager {
 			}
 		}
 
-		if (params.resourcesDelta) {
-			for (const resource in params.resourcesDelta) {
-				if (this.getResourceAvailable(resource) < params.resourcesDelta[resource]) {
-					return false;
+		if (params.carryDelta) {
+			const outcome = params.carryDelta.outcome;
+			if (outcome) {
+				for (const resource in outcome) {
+					if (outcome.hasOwnProperty(resource)) {
+						if (this.getResourceAvailable(resource) < outcome[resource]) {
+							return false;
+						}
+					}
 				}
 			}
 		}
@@ -138,18 +172,38 @@ export class CreepManager {
 	}
 
 	public getResourceAvailable(resource: string): number {
-		return this._carryAvailable[resource] || 0;
+		const creepResource = this._creep.carry[resource] || 0;
+		const usedResources = this._carryDelta.outcome ? this._carryDelta.outcome[resource] || 0 : 0;
+
+		return creepResource - usedResources;
 	}
 
+	public getResourceForecast(resource: string): number {
+		const resourcesAvailable = this.getResourceAvailable(resource);
+		const incommingResources = this._carryDelta.income ? this._carryDelta.income[resource] || 0 : 0;
 
-	public getFreeCarry(): number {
-		return this._creep.carryCapacity - _.sum(this._creep.carry);
+		return resourcesAvailable + incommingResources;
+	}
+
+	public getFreeCarryForecast(): number {
+		let result = this._creep.carryCapacity - _.sum(this._creep.carry);
+
+		if (this._carryDelta.income) {
+			result += _.sum(this._carryDelta.income);
+		}
+
+		if (this._carryDelta.outcome) {
+			result -= _.sum(this._carryDelta.outcome);
+		}
+
+		return result;
 	}
 
 	protected _addOrder(params: CreepOrderParams) {
 		this._scheduledOrders[params.creepOrder] = params;
 	}
 
+	// TODO: refactor to use role classes
 	protected _createTaskObject(): ITask|null {
 		const taskName = this._creep.memory['task']['name'];
 
@@ -160,7 +214,22 @@ export class CreepManager {
 		}
 	}
 
+	// TODO: refactor to use role classes
 	protected _canRunAgain(taskResult: TaskRunResult): boolean {
 		return taskResult.taskStatus !== TaskStatus.ORDER_CONFLICT;
+	}
+
+	protected static _getSourceAvailableResources(target: Source | Mineral): number {
+		if (target instanceof Source) {
+			return target.energy;
+		} else if (
+			target &&
+			typeof target.mineralType === 'string' &&
+			typeof target.mineralAmount === 'number'
+		) {
+			return target.mineralAmount;
+		}
+
+		return NaN;
 	}
 }
