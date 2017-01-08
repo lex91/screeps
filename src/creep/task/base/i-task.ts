@@ -1,10 +1,10 @@
-import {CreepOrder} from "../../creep-manager";
+import {CreepOrderName} from "../../creep-manager";
 
 
 export type TaskRunResult = {
 	taskStatus: TaskStatus;
 	taskName: string;
-	creepOrders?: {[key in CreepOrder]?: number};
+	creepOrders?: {[key in CreepOrderName]?: number};
 	message?: string
 	childTaskResults?: Array<TaskRunResult>
 	[key: string]: any

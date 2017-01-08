@@ -1,16 +1,11 @@
 import {CreepManager, CarryDelta} from '../creep-manager';
+import {ICreepOrder, CreepOrderName, CreepOrderResult} from './i-creep-order';
 
-export type CreepOrderName = 'attack'|'attackController'|'build'|'claimController'|'dismantle'|'drop'|'harvest'|'heal'|
-	'move'|'moveByPath'|'pickup'|'rangedAttack'|'rangedHeal'|'rangedMassAttack'|'repair'|'reserveController'|
-	'signController'|'transfer'|'upgradeController'|'withdraw';
-
-export type CreepOrderResult = number|Error;
-
-export abstract class CreepOrder {
+export abstract class CreepOrder implements ICreepOrder {
 	protected _creepManager: CreepManager;
 	protected _carryDelta: CarryDelta;
 
-	protected static readonly _conflictingOrders = [
+	protected static readonly _conflictingOrders: Array<Set<CreepOrderName>> = [
 		new Set<CreepOrderName>([
 			'harvest', 'attack', 'build', 'repair', 'dismantle', 'attackController', 'rangedHeal', 'heal'
 		]),
