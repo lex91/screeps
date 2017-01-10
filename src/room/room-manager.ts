@@ -1,6 +1,6 @@
 import {RoomConfig} from './config';
 import {creepCreator} from '../services/creep-creator';
-import {CreepManager} from '../creep/creep-manager';
+import {CreepManager} from '../creep/creep-manager/creep-manager';
 
 
 export class RoomManager {

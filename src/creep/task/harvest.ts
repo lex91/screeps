@@ -1,6 +1,6 @@
 import {Task} from './base/task';
 import {TaskRunResult, TaskStatus} from './base/i-task';
-import {CreepManager} from '../creep-manager';
+import {CreepManager} from '../creep-manager/creep-manager';
 import {gameCache} from '../../services/game-cache';
 
 

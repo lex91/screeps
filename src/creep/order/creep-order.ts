@@ -1,4 +1,4 @@
-import {CreepManager, CarryDelta} from '../creep-manager';
+import {CreepManager, CarryDelta} from '../creep-manager/creep-manager';
 import {ICreepOrder, CreepOrderName, CreepOrderResult} from './i-creep-order';
 
 export abstract class CreepOrder implements ICreepOrder {

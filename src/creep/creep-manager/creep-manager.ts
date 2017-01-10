@@ -1,5 +1,5 @@
-import {RoomManager} from '../room/room-manager';
-import {ICreepOrder, CreepOrderName} from './order/i-creep-order';
+import {RoomManager} from '../../room/room-manager';
+import {ICreepOrder, CreepOrderName} from '../order/i-creep-order';
 
 // TODO: do interface and move all types to it
 export type CreepManagerConstructorParams = {

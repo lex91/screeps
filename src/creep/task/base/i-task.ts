@@ -1,4 +1,4 @@
-import {CreepOrderName} from "../../creep-manager";
+import {CreepOrderName} from "../../creep-manager/creep-manager";
 
 
 export type TaskRunResult = {

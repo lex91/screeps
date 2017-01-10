@@ -1,6 +1,6 @@
 import {CreepOrder} from './creep-order';
 import {CreepOrderName} from './i-creep-order';
-import {CreepManager} from '../creep-manager';
+import {CreepManager} from '../creep-manager/creep-manager';
 
 
 const ORDER_NAME: CreepOrderName = 'harvest';

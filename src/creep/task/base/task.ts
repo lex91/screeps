@@ -1,5 +1,5 @@
 import {ITask, TaskRunResult} from './i-task';
-import {CreepManager} from '../../creep-manager';
+import {CreepManager} from '../../creep-manager/creep-manager';
 
 
 export abstract class Task implements ITask {

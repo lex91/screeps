@@ -1,4 +1,4 @@
-import {CarryDelta} from '../creep-manager'; // TODO: remove circular dependency
+import {CarryDelta} from '../creep-manager/creep-manager'; // TODO: remove circular dependency
 
 export type CreepOrderName = 'attack'|'attackController'|'build'|'claimController'|'dismantle'|'drop'|'harvest'|'heal'|
 	'move'|'moveByPath'|'pickup'|'rangedAttack'|'rangedHeal'|'rangedMassAttack'|'repair'|'reserveController'|
